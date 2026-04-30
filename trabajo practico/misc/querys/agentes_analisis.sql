@@ -50,8 +50,19 @@ Agente_Nombre,
 Agente_Apellido,
 Agente_Fecha_Nac,
 Agente_Telefono,
-Agente_Mail
+Agente_Mail,
+Agente_Direccion
 from gd_esquema.Maestra
-group by Agente_Nombre, Agente_Apellido, Agente_Fecha_Nac, Agente_Telefono, Agente_Mail
+group by Agente_Nombre, Agente_Apellido, Agente_Fecha_Nac, Agente_Telefono, Agente_Mail, Agente_Direccion
 -- misma cantidad de registros
+-- no hay agentes que tengan la misma direccion que la agencia
+select
+Agente_Nombre,
+Agente_Apellido,
+Agente_Direccion,
+Agencia_Direccion,
+Cliente_Direccion
+from gd_esquema.Maestra
+where Agente_Direccion = Agencia_Direccion or Cliente_Direccion = Agente_Direccion
+group by Agente_Nombre, Agente_Apellido, Agente_Fecha_Nac, Agente_Telefono, Agente_Mail, Agente_Direccion
 -- => el agente tiene como atributos unicos todos sus campos

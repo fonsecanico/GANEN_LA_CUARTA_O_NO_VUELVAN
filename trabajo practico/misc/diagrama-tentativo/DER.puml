@@ -4,6 +4,7 @@ hide circle
 
 ' avoid problems with angled crows feet
 skinparam linetype ortho
+'agencia y agente
 entity "Agencia" as agencia {
     *id: bigint identity(1,1) <<PK>>
     --
@@ -24,6 +25,7 @@ entity "Agente" as agente {
     Mail: nvarchar(510)
     ID_Direccion: bigint identity(1,1) <<FK>>
 }
+'cliente
 entity "Cliente" as cliente {
   *id: bigint identity(1,1) <<PK>>
   --
@@ -35,13 +37,7 @@ entity "Cliente" as cliente {
   Mail: nvarchar(510)
   ID_Direccion: bigint identity(1,1) <<FK>>
 }
-entity "Proveedor" as proveedor {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Nombre: nvarchar(510)
-  Telefono: nvarchar(510)
-  Mail: nvarchar(510)
-}
+'aeropuerto, vuelo y aerolinea
 entity "Aerolinea" as aerolinea {
   *id: bigint identity(1,1) <<PK>>
   --
@@ -49,49 +45,6 @@ entity "Aerolinea" as aerolinea {
   Codigo: nvarchar(510)
   Alianza: nvarchar(510)
   ID_Pais: bigint <<FK>>
-}
-entity "Solicitud" as solicitud {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Nro_Solicitud: bigint
-  Fecha_Solicitud: date
-  Fecha_Inicio_Tentativa: date
-  Fecha_Fin_Tentativa: date
-  Cant_Pax: int
-  Observaciones: nvarchar(-1)
-  Presupuesto_Estimado: decimal(18,2)
-}
-entity "Detalle_Solicitud" as detalle_solicitud {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Ciudad: nvarchar(510)
-  Cant_Dias_Aprox: int
-  Observaciones: nvarchar(-1)
-}
-entity "Propuesta" as propuesta {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Nro_Propuesta: bigint
-  Fecha_Emision: date
-  Fecha_Vigencia_Hasta: date
-  Fecha_Desde: date
-  Fecha_Hasta: date
-  Subtotal: decimal(18,2)
-  Descuento: decimal(18,2)
-  Importe_Total: decimal(18,2)
-  Estado: nvarchar(510)
-}
-entity "Detalle_Propuesta" as detalle_propuesta {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Vuelo_Cant_Pasajes: int
-  Vuelo_Precio: decimal(18,2)
-  Vuelo_Subtotal: decimal(18,2)
-  Hospedaje_Fecha_Desde: date
-  Hospedaje_Fecha_Hasta: date
-  Hospedaje_Cant: int
-  Hospedaje_Precio: decimal(18,2)
-  Hospedaje_Subtotal: decimal(18,2)
 }
 entity "Aeropuerto" as aeropuerto {
   *id: bigint identity(1,1) <<PK>>
@@ -112,6 +65,84 @@ entity "Vuelo" as vuelo {
   Incluye_Carry: bit
   Incluye_Valija: bit
 }
+'proveedor y excursion
+entity "Proveedor" as proveedor {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Telefono: nvarchar(510)
+  Mail: nvarchar(510)
+}
+entity "Excursion" as excursion {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Descripcion: nvarchar(-1)
+  Horario: nvarchar(100)
+  Duracion: int
+  ID_Proveedor: bigint <<FK>>
+}
+'solicitudes
+entity "Solicitud" as solicitud {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Cliente: bigint <<FK>>
+  ID_Agente: bigint <<FK>>
+  Nro_Solicitud: bigint
+  Fecha_Solicitud: date
+  Fecha_Inicio_Tentativa: date
+  Fecha_Fin_Tentativa: date
+  Cant_Pax: int
+  Observaciones: nvarchar(-1)
+  Presupuesto_Estimado: decimal(18,2)
+}
+entity "Solicitud_X_Ciudad" as solicitud_ciudad {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Solicitud: bigint <<FK>>
+  ID_Ciudad: bigint <<FK>>
+  Cant_Dias_Aprox: int
+  Observaciones: nvarchar(-1)
+}
+'propuestas
+entity "Propuesta" as propuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Solicitud: bigint<<FK>>
+  ID_Agente: bigint<<FK>>
+  ID_Estado: bigint <<FK>>
+  Nro_Propuesta: bigint
+  Fecha_Emision: date
+  Fecha_Vigencia_Hasta: date
+  Fecha_Desde: date
+  Fecha_Hasta: date
+  Descuento: decimal(18,2)
+}
+entity "Estado_Propuesta" as estado_propuesta {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Estado: nvarchar(510)
+}
+entity "Propuesta_X_Vuelo" as propuesta_vuelo {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Propuesta: bigint <<FK>>
+  ID_Vuelo: bigint<<FK>>
+  Cant_Pasajes: int
+  Precio: decimal(18,2)
+}
+entity "Propuesta_X_Hospedaje" as propuesta_hospedaje {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Propuesta: bigint <<FK>>
+  ID_Hospedaje: bigint <<FK>>
+  ID_Habitacion: bigint <<FK>>
+  Fecha_Desde: date
+  Fecha_Hasta: date
+  Cant: int
+  Precio: decimal(18,2)
+}
+'hospedaje y habitacion
 entity "Hospedaje" as hospedaje {
   *id: bigint identity(1,1) <<PK>>
   --
@@ -130,14 +161,14 @@ entity "Habitacion" as habitacion {
   Descripcion: nvarchar(-1)
   Precio_Noche: decimal(18,2)
 }
-entity "Excursion" as excursion {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Nombre: nvarchar(510)
-  Descripcion: nvarchar(-1)
-  Horario: nvarchar(100)
-  Duracion: int
+'reserva
+entity "Reserva" as reserva {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Cod_Reserva: nvarchar(510)
+    Fecha_Reserva: timestamp
 }
+' ventas
 entity "Venta" as venta {
   *id: bigint identity(1,1) <<PK>>
   --
@@ -145,48 +176,75 @@ entity "Venta" as venta {
   Fecha_Venta: date
   Canal_Venta: nvarchar(510)
   Medio_Pago: nvarchar(510)
-  Subtotal: decimal(18,2)
   Descuento: decimal(18,2)
-  Importe_Total: decimal(18,2)
 }
-entity "Detalle_Venta" as detalle_venta {
+entity "Venta_X_Vuelo" as venta_vuelo {
+    *id: bigint identity(1,1)
+    --
+    ID_Venta: bigint <<FK>>
+    ID_Vuelo: bigint <<FK>>
+    ID_Reserva: bigint <<FK>>
+    Vuelo_Cantidad_Pasajes: int
+    Vuelo_Precio_Unitario: decimal(18,2)
+}
+entity "Venta_X_Hospedaje" as venta_hospedaje {
+    *id: bigint identity(1,1)
+    --
+    ID_Venta: bigint <<FK>>
+    ID_Hospedaje: bigint <<FK>>
+    ID_Habitacion: bigint <<FK>>
+    ID_Reserva: bigint<<FK>>
+    Hospedaje_Fecha_Desde: date
+    Hospedaje_Fecha_Hasta: date
+    Hospedaje_Cantidad: int
+    Hospedaje_Precio_Unitario: decimal(18,2)
+}
+entity "Venta_X_Excursion" as venta_excursion {
   *id: bigint identity(1,1) <<PK>>
   --
-  Vuelo_Cantidad_Pasajes: int
-  Vuelo_Precio_Unitario: decimal(18,2)
-  Vuelo_Subtotal: decimal(18,2)
-  Vuelo_Cod_Reserva: nvarchar(510)
-  Hospedaje_Fecha_Desde: date
-  Hospedaje_Fecha_Hasta: date
-  Hospedaje_Cantidad: int
-  Hospedaje_Precio_Unitario: decimal(18,2)
-  Hospedaje_Subtotal: decimal(18,2)
-  Hospedaje_Cod_Reserva: nvarchar(510)
+  ID_Venta: bigint <<FK>>
+  ID_Excursion: bigint <<FK>>
+  ID_Reserva: bigint<<FK>>
   Excursion_Fecha_Reserva: date
   Excursion_Cant: int
   Excursion_Precio_Unitario: decimal(18,2)
-  Excursion_Subtotal: decimal(18,2)
-  Excursion_Cod_Reserva: nvarchar(510)
 }
-
+' encuesta
+entity "Encuesta" as encuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Cliente: bigint <<FK>>
+  ID_Agente: bigint <<FK>>
+  ID_Venta: bigint <<FK>>
+  ID_Propuesta: bigint <<FK>>
+  Codigo_Encuesta: bigint
+  Fecha_Encuesta: date
+  Comentarios: nvarchar(-1)
+}
+entity "Encuesta_Venta" as encuesta_venta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Encuesta: bigint <<FK>>
+  ID_Propuesta: bigint <<FK>>
+}
+entity "Encuesta_Propuesta" as encuesta_propuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Encuesta: bigint <<FK>>
+  ID_Propuesta: bigint <<FK>>
+}
+entity "Encuesta_X_Aspecto" as encuesta_aspecto {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Encuesta: bigint <<FK>>
+  ID_Aspecto: bigint <<FK>>
+  Puntaje: int
+}
 entity "Aspecto" as aspecto {
   *id: bigint identity(1,1) <<PK>>
   --
   Aspecto: nvarchar(510)
 }
-entity "Encuesta" as encuesta {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Codigo_Encuesta: bigint
-  Fecha_Encuesta: date
-  Comentarios: nvarchar(-1)
-}
-entity "Detalle_Encuesta" as detalle_encuesta {
-  *id: bigint identity(1,1) <<PK>>
-  --
-  Puntaje: int
-}
-
 ' locaciones
 entity "Pais" as pais {
     *id: bigint identity(1,1) <<PK>>
@@ -215,26 +273,57 @@ entity "Direccion" as direccion {
     Direccion: nvarchar(510)
     ID_Localidad: bigint <<FK>>
 }
-excursion }|--|| proveedor
 
 aerolinea }|--|| pais
-
-aeropuerto ||--|| ciudad
+aeropuerto }|--|| ciudad
+agente }|--|| direccion
+agente }|--|| agencia
+agencia ||--|| direccion
 
 ciudad }|--|| pais
-
-cliente ||--|| direccion
-
-agente ||--|| direccion
-
-agencia ||--|| direccion
+cliente }|--|| direccion
 
 direccion }|--|| localidad
 
-localidad }|--|| provincia
+encuesta_aspecto }|--|| aspecto
+encuesta_aspecto }|--|| encuesta
+encuesta_propuesta }o--|| encuesta
+encuesta_propuesta }o--|| propuesta
+encuesta_venta }o--|| encuesta
+encuesta_venta }o--|| venta
+estado_propuesta }|--|| propuesta
+excursion }|--|| proveedor
 
 habitacion }|--|| hospedaje
-
 hospedaje ||--|| ciudad
 hospedaje ||--|| direccion
+
+localidad }|--|| provincia
+
+solicitud }|--o| cliente
+solicitud }|--o| agente
+solicitud_ciudad }|--|| solicitud
+solicitud_ciudad }|--|| ciudad
+
+propuesta |o--o| venta
+propuesta }|--|| solicitud
+propuesta }|--o| agente
+propuesta_hospedaje }|--|| propuesta
+propuesta_hospedaje }|--|| hospedaje
+propuesta_hospedaje }|--|| habitacion
+propuesta_vuelo }|--|| propuesta
+propuesta_vuelo }|--|| vuelo
+
+venta_excursion }|--|| reserva
+venta_hospedaje }|--|| reserva
+venta_vuelo }|--|| reserva
+
+venta_excursion }|--|| venta
+venta_excursion }|--|| excursion
+venta_hospedaje }|--|| venta
+venta_hospedaje }|--|| hospedaje
+venta_hospedaje }|--|| habitacion
+venta_vuelo }|--|| venta
+venta_vuelo }|--|| vuelo
+
 @enduml
