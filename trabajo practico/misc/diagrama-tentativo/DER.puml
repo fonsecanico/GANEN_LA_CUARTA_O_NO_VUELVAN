@@ -215,18 +215,26 @@ entity "Direccion" as direccion {
     Direccion: nvarchar(510)
     ID_Localidad: bigint <<FK>>
 }
+excursion }|--|| proveedor
+
 aerolinea }|--|| pais
+
 aeropuerto ||--|| ciudad
+
 ciudad }|--|| pais
+
 cliente ||--|| direccion
+
 agente ||--|| direccion
+
 agencia ||--|| direccion
+
 direccion }|--|| localidad
+
 localidad }|--|| provincia
 
 habitacion }|--|| hospedaje
+
 hospedaje ||--|| ciudad
 hospedaje ||--|| direccion
-'alumno }o..|| AA
-''alumno ||..o{ diploma
 @enduml
