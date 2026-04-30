@@ -1,0 +1,232 @@
+@startuml
+' hide the spot
+hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+entity "Agencia" as agencia {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Telefono: nvarchar(510)
+    Mail: nvarchar(510)
+    ID_Direccion: bigint identity(1,1) <<FK>>
+
+}
+entity "Agente" as agente {
+  *id : bigint identity(1,1) <<PK>>
+  --
+    Legajo: bigint
+    Nombre: nvarchar(510)
+    Apellido: nvarchar(510)
+    Dni: nvarchar(510)
+    Fecha_Nac: date
+    Telefono: nvarchar(510)
+    Mail: nvarchar(510)
+    ID_Direccion: bigint identity(1,1) <<FK>>
+}
+entity "Cliente" as cliente {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Apellido: nvarchar(510)
+  Dni: nvarchar(510)
+  Fecha_Nac: date
+  Telefono: nvarchar(510)
+  Mail: nvarchar(510)
+  ID_Direccion: bigint identity(1,1) <<FK>>
+}
+entity "Proveedor" as proveedor {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Telefono: nvarchar(510)
+  Mail: nvarchar(510)
+}
+entity "Aerolinea" as aerolinea {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Codigo: nvarchar(510)
+  Alianza: nvarchar(510)
+  ID_Pais: bigint <<FK>>
+}
+entity "Solicitud" as solicitud {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nro_Solicitud: bigint
+  Fecha_Solicitud: date
+  Fecha_Inicio_Tentativa: date
+  Fecha_Fin_Tentativa: date
+  Cant_Pax: int
+  Observaciones: nvarchar(-1)
+  Presupuesto_Estimado: decimal(18,2)
+}
+entity "Detalle_Solicitud" as detalle_solicitud {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Ciudad: nvarchar(510)
+  Cant_Dias_Aprox: int
+  Observaciones: nvarchar(-1)
+}
+entity "Propuesta" as propuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nro_Propuesta: bigint
+  Fecha_Emision: date
+  Fecha_Vigencia_Hasta: date
+  Fecha_Desde: date
+  Fecha_Hasta: date
+  Subtotal: decimal(18,2)
+  Descuento: decimal(18,2)
+  Importe_Total: decimal(18,2)
+  Estado: nvarchar(510)
+}
+entity "Detalle_Propuesta" as detalle_propuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Vuelo_Cant_Pasajes: int
+  Vuelo_Precio: decimal(18,2)
+  Vuelo_Subtotal: decimal(18,2)
+  Hospedaje_Fecha_Desde: date
+  Hospedaje_Fecha_Hasta: date
+  Hospedaje_Cant: int
+  Hospedaje_Precio: decimal(18,2)
+  Hospedaje_Subtotal: decimal(18,2)
+}
+entity "Aeropuerto" as aeropuerto {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Codigo: nvarchar(20)
+  Descripcion: nvarchar(400)
+  ID_Ciudad: bigint <<FK>>
+}
+entity "Vuelo" as vuelo {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Fecha_Salida: date
+  Horario_Salida: nvarchar(100)
+  Fecha_Llegada: date
+  Horario_Llegada: nvarchar(100)
+  Duracion: int
+  Precio: decimal(18,2)
+  Incluye_Carry: bit
+  Incluye_Valija: bit
+}
+entity "Hospedaje" as hospedaje {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Ciudad: bigint <<FK>>
+  Nombre: nvarchar(510)
+  ID_Direccion: bigint<<FK>>
+  Incluye_Desayuno: bit
+  Check_In: nvarchar(100)
+  Check_Out: nvarchar(100)
+}
+entity "Habitacion" as habitacion {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  ID_Hospedaje: bigint <<FK>>
+  Nombre: nvarchar(510)
+  Descripcion: nvarchar(-1)
+  Precio_Noche: decimal(18,2)
+}
+entity "Excursion" as excursion {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nombre: nvarchar(510)
+  Descripcion: nvarchar(-1)
+  Horario: nvarchar(100)
+  Duracion: int
+}
+entity "Venta" as venta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Nro_Venta: bigint
+  Fecha_Venta: date
+  Canal_Venta: nvarchar(510)
+  Medio_Pago: nvarchar(510)
+  Subtotal: decimal(18,2)
+  Descuento: decimal(18,2)
+  Importe_Total: decimal(18,2)
+}
+entity "Detalle_Venta" as detalle_venta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Vuelo_Cantidad_Pasajes: int
+  Vuelo_Precio_Unitario: decimal(18,2)
+  Vuelo_Subtotal: decimal(18,2)
+  Vuelo_Cod_Reserva: nvarchar(510)
+  Hospedaje_Fecha_Desde: date
+  Hospedaje_Fecha_Hasta: date
+  Hospedaje_Cantidad: int
+  Hospedaje_Precio_Unitario: decimal(18,2)
+  Hospedaje_Subtotal: decimal(18,2)
+  Hospedaje_Cod_Reserva: nvarchar(510)
+  Excursion_Fecha_Reserva: date
+  Excursion_Cant: int
+  Excursion_Precio_Unitario: decimal(18,2)
+  Excursion_Subtotal: decimal(18,2)
+  Excursion_Cod_Reserva: nvarchar(510)
+}
+
+entity "Aspecto" as aspecto {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Aspecto: nvarchar(510)
+}
+entity "Encuesta" as encuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Codigo_Encuesta: bigint
+  Fecha_Encuesta: date
+  Comentarios: nvarchar(-1)
+}
+entity "Detalle_Encuesta" as detalle_encuesta {
+  *id: bigint identity(1,1) <<PK>>
+  --
+  Puntaje: int
+}
+
+' locaciones
+entity "Pais" as pais {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Nombre: nvarchar(510)
+}
+entity "Ciudad" as ciudad {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Nombre: nvarchar(510)
+}
+entity "Provincia" as provincia {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Nombre: nvarchar(510)
+}
+entity "Localidad" as localidad {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Nombre: nvarchar(510)
+    ID_Provincia: bigint <<FK>>
+}
+entity "Direccion" as direccion {
+    *id: bigint identity(1,1) <<PK>>
+    --
+    Direccion: nvarchar(510)
+    ID_Localidad: bigint <<FK>>
+}
+aerolinea }|--|| pais
+aeropuerto ||--|| ciudad
+ciudad }|--|| pais
+cliente ||--|| direccion
+agente ||--|| direccion
+agencia ||--|| direccion
+direccion }|--|| localidad
+localidad }|--|| provincia
+
+habitacion }|--|| hospedaje
+hospedaje ||--|| ciudad
+hospedaje ||--|| direccion
+'alumno }o..|| AA
+''alumno ||..o{ diploma
+@enduml
