@@ -1,0 +1,5 @@
+select distinct
+Agencia_Nro_Agencia,
+Agencia_Direccion
+from gd_esquema.Maestra
+order by Agencia_Nro_Agencia, Agencia_Direccion
