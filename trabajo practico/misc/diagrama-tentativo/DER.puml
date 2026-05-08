@@ -6,307 +6,307 @@ hide circle
 skinparam linetype ortho
 'agencia y agente
 entity "Agencia" as agencia {
-    *id: bigint identity(1,1) <<PK>>
+    *Agencia_ID: bigint identity(1,1) <<PK>>
     --
-    Nro_Agencia: bigint
-    ID_Direccion: bigint identity(1,1) <<FK>>
-    Telefono: nvarchar(510)
-    Mail: nvarchar(510)
+    Agencia_Nro_Agencia: bigint
+    Agencia_ID_Direccion: bigint identity(1,1) <<FK>>
+    Agencia_Telefono: nvarchar(510)
+    Agencia_Mail: nvarchar(510)
 
 }
 entity "Agente" as agente {
-  *id : bigint identity(1,1) <<PK>>
-  --
-    ID_Direccion: bigint identity(1,1) <<FK>>
-    ID_Agencia: bigint identity(1,1) <<FK>>
-    Legajo: bigint
-    Nombre: nvarchar(510)
-    Apellido: nvarchar(510)
-    Dni: nvarchar(510)
-    Fecha_Nac: date
-    Telefono: nvarchar(510)
-    Mail: nvarchar(510)
+    *Agente_ID: bigint identity(1,1) <<PK>>
+    --
+    Agente_ID_Direccion: bigint identity(1,1) <<FK>>
+    Agente_ID_Agencia: bigint identity(1,1) <<FK>>
+    Agente_Legajo: bigint
+    Agente_Nombre: nvarchar(510)
+    Agente_Apellido: nvarchar(510)
+    Agente_Dni: nvarchar(510)
+    Agente_Fecha_Nac: date
+    Agente_Telefono: nvarchar(510)
+    Agente_Mail: nvarchar(510)
 }
 'cliente
 entity "Cliente" as cliente {
-    *id: bigint identity(1,1) <<PK>>
+    *Cliente_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Direccion: bigint identity(1,1) <<FK>>
-    Nombre: nvarchar(510)
-    Apellido: nvarchar(510)
-    Dni: nvarchar(510)
-    Fecha_Nac: date
-    Telefono: nvarchar(510)
-    Mail: nvarchar(510)
+    Cliente_ID_Direccion: bigint identity(1,1) <<FK>>
+    Cliente_Nombre: nvarchar(510)
+    Cliente_Apellido: nvarchar(510)
+    Cliente_Dni: nvarchar(510)
+    Cliente_Fecha_Nac: date
+    Cliente_Telefono: nvarchar(510)
+    Cliente_Mail: nvarchar(510)
 }
 'aeropuerto, vuelo y aerolinea
 entity "Aerolinea" as aerolinea {
-    *id: bigint identity(1,1) <<PK>>
+    *Aerolinea_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Pais: bigint <<FK>>
-    ID_Alianza: bigint <<FK>>
-    Nombre: nvarchar(510)
-    Codigo: nvarchar(510)
+    Aerolinea_ID_Pais: bigint <<FK>>
+    Aerolinea_ID_Alianza: bigint <<FK>>
+    Aerolinea_Nombre: nvarchar(510)
+    Aerolinea_Codigo: nvarchar(510)
 }
 entity "Alianza" as alianza {
-    *id: bigint identity(1,1) <<PK>>
+    *Alianza_ID: bigint identity(1,1) <<PK>>
     --
-    Alianza: nvarchar(510)
+    Alianza_Nombre: nvarchar(510)
 }
 entity "Aeropuerto" as aeropuerto {
-    *id: bigint identity(1,1) <<PK>>
+    *Aeropuerto_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Ciudad: bigint <<FK>>
-    Codigo: nvarchar(20)
-    Descripcion: nvarchar(400)
+    Aeropuerto_ID_Ciudad: bigint <<FK>>
+    Aeropuerto_Codigo: nvarchar(20)
+    Aeropuerto_Descripcion: nvarchar(400)
 }
 entity "Vuelo" as vuelo {
-    *id: bigint identity(1,1) <<PK>>
+    *Vuelo_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Aeropuerto_Salida: bigint <<FK>>
-    ID_Aeropuerto_Llegada: bigint <<FK>>
-    ID_Aerolinea: bigint <<FK>>
-    Fecha_Salida: date
-    Horario_Salida: nvarchar(100)
-    Fecha_Llegada: date
-    Horario_Llegada: nvarchar(100)
-    Duracion: int
-    Precio: decimal(18,2)
-    Incluye_Carry: bit
-    Incluye_Valija: bit
+    Vuelo_ID_Aeropuerto_Salida: bigint <<FK>>
+    Vuelo_ID_Aeropuerto_Llegada: bigint <<FK>>
+    Vuelo_ID_Aerolinea: bigint <<FK>>
+    Vuelo_Fecha_Salida: date
+    Vuelo_Horario_Salida: nvarchar(100)
+    Vuelo_Fecha_Llegada: date
+    Vuelo_Horario_Llegada: nvarchar(100)
+    Vuelo_Duracion: int
+    Vuelo_Precio: decimal(18,2)
+    Vuelo_Incluye_Carry: bit
+    Vuelo_Incluye_Valija: bit
 }
 'proveedor y excursion
 entity "Proveedor" as proveedor {
-    *id: bigint identity(1,1) <<PK>>
+    *Proveedor_ID: bigint identity(1,1) <<PK>>
     --
-    Nombre: nvarchar(510)
-    Telefono: nvarchar(510)
-    Mail: nvarchar(510)
+    Proveedor_Nombre: nvarchar(510)
+    Proveedor_Telefono: nvarchar(510)
+    Proveedor_Mail: nvarchar(510)
 }
 entity "Excursion" as excursion {
-    *id: bigint identity(1,1) <<PK>>
+    *Excursion_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Proveedor: bigint <<FK>>
-    Nombre: nvarchar(510)
-    Descripcion: nvarchar(-1)
-    Horario: nvarchar(100)
-    Duracion: int
-    Precio: decimal(18,2)
+    Excursion_ID_Proveedor: bigint <<FK>>
+    Excursion_Nombre: nvarchar(510)
+    Excursion_Descripcion: nvarchar(-1)
+    Excursion_Horario: nvarchar(100)
+    Excursion_Duracion: int
+    Excursion_Precio: decimal(18,2)
 }
 'solicitudes
 entity "Solicitud" as solicitud {
-    *id: bigint identity(1,1) <<PK>>
+    *Solicitud_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Cliente: bigint <<FK>>
-    ID_Agente: bigint <<FK>>
-    Nro_Solicitud: bigint
-    Fecha_Solicitud: date
-    Fecha_Inicio_Tentativa: date
-    Fecha_Fin_Tentativa: date
-    Cant_Pasajeros: int
-    Observaciones: nvarchar(-1)
-    Presupuesto_Estimado: decimal(18,2)
+    Solicitud_ID_Cliente: bigint <<FK>>
+    Solicitud_ID_Agente: bigint <<FK>>
+    Solicitud_Nro_Solicitud: bigint
+    Solicitud_Fecha_Solicitud: date
+    Solicitud_Fecha_Inicio_Tentativa: date
+    Solicitud_Fecha_Fin_Tentativa: date
+    Solicitud_Cantidad_Pasajeros: int
+    Solicitud_Observaciones: nvarchar(-1)
+    Solicitud_Presupuesto_Estimado: decimal(18,2)
 }
 entity "Solicitud_X_Ciudad" as solicitud_ciudad {
-    *id: bigint identity(1,1) <<PK>>
+    *Solicitud_X_Ciudad_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Solicitud: bigint <<FK>>
-    ID_Ciudad: bigint <<FK>>
-    Cant_Dias_Aprox: int
-    Observaciones: nvarchar(-1)
+    Solicitud_X_Ciudad_ID_Solicitud: bigint <<FK>>
+    Solicitud_X_Ciudad_ID_Ciudad: bigint <<FK>>
+    Solicitud_X_Ciudad_Cantidad_Dias_Aprox: int
+    Solicitud_X_Ciudad_Observaciones: nvarchar(-1)
 }
 'propuestas
 entity "Propuesta" as propuesta {
-    *id: bigint identity(1,1) <<PK>>
+    *Propuesta_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Solicitud: bigint<<FK>>
-    ID_Agente: bigint<<FK>>
-    ID_Estado: bigint <<FK>>
-    Nro_Propuesta: bigint
-    Fecha_Emision: date
-    Fecha_Vigencia_Hasta: date
-    Fecha_Desde: date
-    Fecha_Hasta: date
-    Subtotal: decimal(18,2)
-    Descuento: decimal(18,2)
-    Importe_Total: decimal(18,2)
+    Propuesta_ID_Solicitud: bigint<<FK>>
+    Propuesta_ID_Agente: bigint<<FK>>
+    Propuesta_ID_Estado: bigint <<FK>>
+    Propuesta_Nro_Propuesta: bigint
+    Propuesta_Fecha_Emision: date
+    Propuesta_Fecha_Vigencia_Hasta: date
+    Propuesta_Fecha_Desde: date
+    Propuesta_Fecha_Hasta: date
+    Propuesta_Subtotal: decimal(18,2)
+    Propuesta_Descuento: decimal(18,2)
+    Propuesta_Importe_Total: decimal(18,2)
 }
 entity "Estado_Propuesta" as estado_propuesta {
-    *id: bigint identity(1,1) <<PK>>
+    *Estado_Propuesta_ID_: bigint identity(1,1) <<PK>>
     --
-    Estado: nvarchar(510)
+    Estado_Propuesta_Tipo: nvarchar(510)
 }
 entity "Propuesta_X_Vuelo" as propuesta_vuelo {
-    *id: bigint identity(1,1) <<PK>>
+    *Propuesta_X_Vuelo_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Propuesta: bigint <<FK>>
-    ID_Vuelo: bigint<<FK>>
-    Cant_Pasajes: int
-    Precio_Unitario: decimal(18,2)
-    Subtotal: decimal(18,2)
+    Propuesta_X_Vuelo_ID_Propuesta: bigint <<FK>>
+    Propuesta_X_Vuelo_ID_Vuelo: bigint<<FK>>
+    Propuesta_X_Vuelo_Cantidad_Pasajes: int
+    Propuesta_X_Vuelo_Precio_Unitario: decimal(18,2)
+    Propuesta_X_Vuelo_Subtotal: decimal(18,2)
 }
 entity "Propuesta_X_Hospedaje" as propuesta_hospedaje {
-    *id: bigint identity(1,1) <<PK>>
+    *Propuesta_X_Hospedaje_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Propuesta: bigint <<FK>>
-    ID_Hospedaje: bigint <<FK>>
-    ID_Habitacion: bigint <<FK>>
-    Fecha_Desde: date
-    Fecha_Hasta: date
-    Cant_Habitaciones: int
-    Precio_Unitario: decimal(18,2)
-    Subtotal: decimal(18,2)
+    Propuesta_X_Hospedaje_ID_Propuesta: bigint <<FK>>
+    Propuesta_X_Hospedaje_ID_Hospedaje: bigint <<FK>>
+    Propuesta_X_Hospedaje_ID_Habitacion: bigint <<FK>>
+    Propuesta_X_Hospedaje_Fecha_Desde: date
+    Propuesta_X_Hospedaje_Fecha_Hasta: date
+    Propuesta_X_Hospedaje_Cantidad_Habitaciones: int
+    Propuesta_X_Hospedaje_Precio_Unitario: decimal(18,2)
+    Propuesta_X_Hospedaje_Subtotal: decimal(18,2)
 }
 'hospedaje y habitacion
 entity "Hospedaje" as hospedaje {
-    *id: bigint identity(1,1) <<PK>>
+    *Hospedaje_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Ciudad: bigint <<FK>>
-    ID_Direccion: bigint<<FK>>
-    Nombre: nvarchar(510)
-    Incluye_Desayuno: bit
-    Check_In: nvarchar(100)
-    Check_Out: nvarchar(100)
+    Hospedaje_ID_Ciudad: bigint <<FK>>
+    Hospedaje_ID_Direccion: bigint<<FK>>
+    Hospedaje_Nombre: nvarchar(510)
+    Hospedaje_Incluye_Desayuno: bit
+    Hospedaje_Check_In: nvarchar(100)
+    Hospedaje_Check_Out: nvarchar(100)
 }
 entity "Habitacion" as habitacion {
-    *id: bigint identity(1,1) <<PK>>
+    *Habitacion_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Hospedaje: bigint <<FK>>
-    Nombre: nvarchar(510)
-    Descripcion: nvarchar(-1)
-    Precio_Noche: decimal(18,2)
+    Habitacion_ID_Hospedaje: bigint <<FK>>
+    Habitacion_Nombre: nvarchar(510)
+    Habitacion_Descripcion: nvarchar(-1)
+    Habitacion_Precio_Noche: decimal(18,2)
 }
 'reserva
 entity "Reserva" as reserva {
-    *id: bigint identity(1,1) <<PK>>
+    *Reserva_ID: bigint identity(1,1) <<PK>>
     --
-    Cod_Reserva: nvarchar(510)
-    Fecha_Reserva: timestamp
+    Reserva_Cod_Reserva: nvarchar(510)
+    Reserva_Fecha_Reserva: timestamp
 }
 ' ventas
 entity "Venta" as venta {
-    *id: bigint identity(1,1) <<PK>>
+    *Venta_ID: bigint identity(1,1) <<PK>>
     --
-    Nro_Venta: bigint
-    Fecha_Venta: date
-    ID_Cliente: bigint <<FK>>
-    ID_Agente: bigint <<FK>>
-    ID_Agencia: bigint <<FK>>
-    ID_Medio_Pago: bigint <<FK>>
-    ID_Canal_Venta: bigint <<FK>>
-    Subtotal: decimal(18,2)
-    Descuento: decimal(18,2)
-    Importe_Total: decimal(18,2)
+    Venta_Nro_Venta: bigint
+    Venta_Fecha_Venta: date
+    Venta_ID_Cliente: bigint <<FK>>
+    Venta_ID_Agente: bigint <<FK>>
+    Venta_ID_Agencia: bigint <<FK>>
+    Venta_ID_Medio_Pago: bigint <<FK>>
+    Venta_ID_Canal_Venta: bigint <<FK>>
+    Venta_Subtotal: decimal(18,2)
+    Venta_Descuento: decimal(18,2)
+    Venta_Importe_Total: decimal(18,2)
 }
 entity "Canal_Venta" as canal_venta {
-    *id: bigint identity(1,1) <<PK>>
+    *Canal_Venta_ID: bigint identity(1,1) <<PK>>
     --
-    Canal_Venta: nvarchar(510)
+    Canal_Venta_Nombre: nvarchar(510)
 }
 entity "Medio_Pago" as medio_pago {
-    *id: bigint identity(1,1) <<PK>>
+    *Medio_Pago_ID: bigint identity(1,1) <<PK>>
     --
-    Medio_Pago: nvarchar(510)
+    Medio_Pago_Nombre: nvarchar(510)
 }
 entity "Venta_X_Vuelo" as venta_vuelo {
-    *id: bigint identity(1,1)
+    *Venta_X_Vuelo_ID: bigint identity(1,1)
     --
-    ID_Venta: bigint <<FK>>
-    ID_Vuelo: bigint <<FK>>
-    ID_Reserva: bigint <<FK>>
-    Vuelo_Cantidad_Pasajes: int
-    Vuelo_Precio_Unitario: decimal(18,2)
-    Subtotal: decimal(18,2)
+    Venta_X_Vuelo_ID_Venta: bigint <<FK>>
+    Venta_X_Vuelo_ID_Vuelo: bigint <<FK>>
+    Venta_X_Vuelo_ID_Reserva: bigint <<FK>>
+    Venta_X_Vuelo_Vuelo_Cantidad_Pasajes: int
+    Venta_X_Vuelo_Vuelo_Precio_Unitario: decimal(18,2)
+    Venta_X_Vuelo_Subtotal: decimal(18,2)
 }
 entity "Venta_X_Hospedaje" as venta_hospedaje {
-    *id: bigint identity(1,1)
+    *Venta_X_Hospedaje_ID: bigint identity(1,1)
     --
-    ID_Venta: bigint <<FK>>
-    ID_Hospedaje: bigint <<FK>>
-    ID_Habitacion: bigint <<FK>>
-    ID_Reserva: bigint<<FK>>
-    Hospedaje_Fecha_Desde: date
-    Hospedaje_Fecha_Hasta: date
-    Hospedaje_Cantidad: int
-    Hospedaje_Precio_Unitario: decimal(18,2)
-    Subtotal: decimal(18,2)
+    Venta_X_Hospedaje_ID_Venta: bigint <<FK>>
+    Venta_X_Hospedaje_ID_Hospedaje: bigint <<FK>>
+    Venta_X_Hospedaje_ID_Habitacion: bigint <<FK>>
+    Venta_X_Hospedaje_ID_Reserva: bigint<<FK>>
+    Venta_X_Hospedaje_Hospedaje_Fecha_Desde: date
+    Venta_X_Hospedaje_Hospedaje_Fecha_Hasta: date
+    Venta_X_Hospedaje_Hospedaje_Cantidad: int
+    Venta_X_Hospedaje_Hospedaje_Precio_Unitario: decimal(18,2)
+    Venta_X_Hospedaje_Subtotal: decimal(18,2)
 }
 entity "Venta_X_Excursion" as venta_excursion {
-    *id: bigint identity(1,1) <<PK>>
+    *Venta_X_Excursion_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Venta: bigint <<FK>>
-    ID_Excursion: bigint <<FK>>
-    ID_Reserva: bigint<<FK>>
-    Excursion_Fecha_Reserva: date
-    Excursion_Cant: int
-    Excursion_Precio_Unitario: decimal(18,2)
-    Subtotal: decimal(18,2)
+    Venta_X_Excursion_ID_Venta: bigint <<FK>>
+    Venta_X_Excursion_ID_Excursion: bigint <<FK>>
+    Venta_X_Excursion_ID_Reserva: bigint<<FK>>
+    Venta_X_Excursion_Excursion_Fecha_Reserva: date
+    Venta_X_Excursion_Excursion_Cantidad: int
+    Venta_X_Excursion_Excursion_Precio_Unitario: decimal(18,2)
+    Venta_X_Excursion_Subtotal: decimal(18,2)
 }
 ' encuesta
 entity "Encuesta" as encuesta {
-    *id: bigint identity(1,1) <<PK>>
+    *Encuesta_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Cliente: bigint <<FK>>
-    ID_Agente: bigint <<FK>>
-    Codigo_Encuesta: bigint
-    Fecha_Encuesta: date
-    Comentarios: nvarchar(-1)
+    Encuesta_ID_Cliente: bigint <<FK>>
+    Encuesta_ID_Agente: bigint <<FK>>
+    Encuesta_Codigo_Encuesta: bigint
+    Encuesta_Fecha_Encuesta: date
+    Encuesta_Comentarios: nvarchar(-1)
 }
 entity "Encuesta_Venta" as encuesta_venta {
-    *id: bigint identity(1,1) <<PK>>
+    *Encuesta_Venta_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Encuesta: bigint <<FK>>
-    ID_Venta: bigint <<FK>>
+    Encuesta_Venta_ID_Encuesta: bigint <<FK>>
+    Encuesta_Venta_ID_Venta: bigint <<FK>>
 }
 entity "Encuesta_Propuesta" as encuesta_propuesta {
-    *id: bigint identity(1,1) <<PK>>
+    *Encuesta_Propuesta_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Encuesta: bigint <<FK>>
-    ID_Propuesta: bigint <<FK>>
+    Encuesta_Propuesta_ID_Encuesta: bigint <<FK>>
+    Encuesta_Propuesta_ID_Propuesta: bigint <<FK>>
 }
 entity "Encuesta_X_Aspecto" as encuesta_aspecto {
-    *id: bigint identity(1,1) <<PK>>
+    *Encuesta_X_Aspecto_ID: bigint identity(1,1) <<PK>>
     --
-    ID_Encuesta: bigint <<FK>>
-    ID_Aspecto: bigint <<FK>>
-    Puntaje: int
+    Encuesta_X_Aspecto_ID_Encuesta: bigint <<FK>>
+    Encuesta_X_Aspecto_ID_Aspecto: bigint <<FK>>
+    Encuesta_X_Aspecto_Puntaje: int
 }
 entity "Aspecto" as aspecto {
-    *id: bigint identity(1,1) <<PK>>
+    *Aspecto_ID: bigint identity(1,1) <<PK>>
     --
-    Aspecto: nvarchar(510)
+    Aspecto_Tipo: nvarchar(510)
 }
 ' locaciones
 entity "Pais" as pais {
-    *id: bigint identity(1,1) <<PK>>
+    *Pais_ID: bigint identity(1,1) <<PK>>
     --
-    Nombre: nvarchar(510)
+    Pais_Nombre: nvarchar(510)
 }
 entity "Ciudad" as ciudad {
-    *id: bigint identity(1,1) <<PK>>
+    *Ciudad_ID: bigint identity(1,1) <<PK>>
     --
-    Nombre: nvarchar(510)
+    Ciudad_Nombre: nvarchar(510)
 }
 entity "Provincia" as provincia {
-    *id: bigint identity(1,1) <<PK>>
+    *Provincia_ID: bigint identity(1,1) <<PK>>
     --
-    Nombre: nvarchar(510)
+    Provincia_Nombre: nvarchar(510)
 }
 entity "Localidad" as localidad {
-    *id: bigint identity(1,1) <<PK>>
+    *Localidad_ID: bigint identity(1,1) <<PK>>
     --
-    Nombre: nvarchar(510)
-    ID_Provincia: bigint <<FK>>
+    Localidad_Nombre: nvarchar(510)
+    Localidad_ID_Provincia: bigint <<FK>>
 }
 entity "Direccion" as direccion {
-    *id: bigint identity(1,1) <<PK>>
+    *Direccion_ID: bigint identity(1,1) <<PK>>
     --
     Direccion: nvarchar(510)
-    ID_Localidad: bigint <<FK>>
+    Direccion_ID_Localidad: bigint <<FK>>
 }
 
 aerolinea }|--|| pais
-aerolinea }|-right-|| alianza
+aerolinea }|-right-o| alianza
 aeropuerto }|--|| ciudad
 agente }|--|| direccion
 agente }|--|| agencia
@@ -332,14 +332,14 @@ hospedaje }|--|| direccion
 
 localidad }|--|| provincia
 
-solicitud }|-left-o| cliente
+solicitud }|-left-|| cliente
 solicitud }|--o| agente
 solicitud_ciudad }|-left-|| solicitud
 solicitud_ciudad }|--|| ciudad
 
 propuesta |o--o| venta
-propuesta }|--|| solicitud
-propuesta }|--o| agente
+propuesta }o--|| solicitud
+propuesta }|--|| agente
 propuesta_hospedaje }|--|| propuesta
 propuesta_hospedaje }|-left-|| hospedaje
 propuesta_hospedaje }|--|| habitacion
