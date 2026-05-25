@@ -27,6 +27,9 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Alianzas;
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Aerolineas')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aerolineas;
 
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Aeropuertos')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aeropuertos;
+
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Proveedores')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Proveedores;
 
@@ -51,6 +54,24 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes_X_Ciudad;
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Propuestas')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas;
 
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Reservas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Reservas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Vuelos')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Vuelos;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Hospedajes')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Hospedajes;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Habitaciones')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Canales_Venta')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Medios_Pago')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago;
+
 --DROP Preventivo de Tablas OLTP------------------------------------------------------
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Propuesta')
@@ -71,6 +92,12 @@ DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Agente;
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Agencia')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Agencia;
 
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Habitacion')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Hospedaje')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje;
+
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Direccion')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Direccion;
 
@@ -83,6 +110,12 @@ DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Provincia;
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Estado_Propuesta')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Estado_Propuesta;
 
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Vuelo')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Aeropuerto')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto;
+
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Ciudad')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad;
 
@@ -91,6 +124,9 @@ DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea;
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Pais')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Pais;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Reserva')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva;
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Alianza')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Alianza;
@@ -101,6 +137,12 @@ DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Excursion;
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Proveedor')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Proveedor;
 
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Medio_Pago')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Canal_Venta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta;
+
 --DROP Preventivo de Schema------------------------------------------------------------
 IF EXISTS (SELECT name from sys.schemas WHERE name = 'GANEN_LA_CUARTA_O_NO_VUELVAN')
 DROP SCHEMA GANEN_LA_CUARTA_O_NO_VUELVAN;
@@ -108,6 +150,7 @@ DROP SCHEMA GANEN_LA_CUARTA_O_NO_VUELVAN;
 GO
 
 --Comentar desde Aca hacia abajo para eliminar todo
+
 
 --Creacion de Schema------------------------------------------------
 CREATE SCHEMA GANEN_LA_CUARTA_O_NO_VUELVAN
@@ -164,6 +207,14 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea (
 	Aerolinea_ID_Alianza BIGINT not null,
 	FOREIGN KEY (Aerolinea_ID_Pais) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Pais(Pais_ID),
 	FOREIGN KEY (Aerolinea_ID_Alianza) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Alianza(Alianza_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto (
+	Aeropuerto_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Aeropuerto_Codigo NVARCHAR(20) not null,
+	Aeropuerto_Descripcion NVARCHAR(400) not null,
+	Aeropuerto_ID_Ciudad BIGINT not null,
+	FOREIGN KEY (Aeropuerto_ID_Ciudad) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad(Ciudad_ID)
 );
 
 CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Proveedor (
@@ -263,6 +314,61 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta (
 	FOREIGN KEY (Propuesta_ID_Estado) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Estado_Propuesta(Estado_Propuesta_ID)
 );
 
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva (
+	Reserva_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Reserva_Cod_Reserva NVARCHAR(510) not null,
+	Reserva_Fecha_Reserva date
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo (
+	Vuelo_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Vuelo_Fecha_Salida date not null,
+	Vuelo_Horario_Salida nvarchar(100) not null,
+	Vuelo_Fecha_Llegada date not null,
+	Vuelo_Horario_Llegada nvarchar(100) not null,
+	Vuelo_Duracion int not null,
+	Vuelo_Precio decimal(18,2) not null,
+	Vuelo_Incluye_Carry bit not null,
+	Vuelo_Incluye_Valija bit not null,
+	Vuelo_ID_Aeropuerto_Salida BIGINT not null,
+	Vuelo_ID_Aeropuerto_Llegada BIGINT not null,
+	Vuelo_ID_Aerolinea BIGINT not null,
+	FOREIGN KEY (Vuelo_ID_Aeropuerto_Salida) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto(Aeropuerto_ID),
+	FOREIGN KEY (Vuelo_ID_Aeropuerto_Llegada) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto(Aeropuerto_ID),
+	FOREIGN KEY (Vuelo_ID_Aerolinea) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea(Aerolinea_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje (
+	Hospedaje_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Hospedaje_Nombre nvarchar(510) not null,
+	Hospedaje_Incluye_Desayuno bit not null,
+	Hospedaje_Check_In nvarchar(100) not null,
+	Hospedaje_Check_Out nvarchar(100) not null,
+	Hospedaje_ID_Ciudad BIGINT not null,
+	Hospedaje_ID_Direccion BIGINT not null,
+	FOREIGN KEY (Hospedaje_ID_Ciudad) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad(Ciudad_ID),
+	FOREIGN KEY (Hospedaje_ID_Direccion) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Direccion(Direccion_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion (
+	Habitacion_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Habitacion_Nombre nvarchar(510) not null,
+	Habitacion_Descripcion nvarchar(max) not null,
+	Habitacion_Precio decimal(18,2) not null,
+	Habitacion_ID_Hospedaje BIGINT not null,
+	FOREIGN KEY (Habitacion_ID_Hospedaje) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje(Hospedaje_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta(
+	Canal_venta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Canal_Venta_Nombre NVARCHAR(510) not null
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago(
+	Medio_Pago_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Medio_Pago_Nombre NVARCHAR(510) not null
+);
+
 GO
 
 --Creacion de Stored Procedures para Migracion------------------------
@@ -350,8 +456,8 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Paises
 	  AND NOT EXISTS (
 		  SELECT 1
 		  FROM gd_esquema.Maestra m2
-		  WHERE m2.Hospedaje_Pais COLLATE Latin1_General_CI_AI
-			  = m.Aerolinea_Pais COLLATE Latin1_General_CI_AI
+		  WHERE m2.Hospedaje_Pais
+			  = m.Aerolinea_Pais
 	  );
   END
 GO
@@ -386,11 +492,26 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aerolineas
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Alianza a
 			ON a.Alianza_Nombre = t.Aerolinea_Alianza
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Pais p
-			ON p.Pais_Nombre COLLATE Latin1_General_CI_AI = t.Aerolinea_Pais COLLATE Latin1_General_CI_AI
+			ON p.Pais_Nombre = t.Aerolinea_Pais
 		WHERE t.Aerolinea_Alianza IS NOT NULL 
 			AND t.Aerolinea_Pais IS NOT NULL
 			AND t.Aerolinea_Nombre IS NOT NULL
 			AND t.Aerolinea_Codigo IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aeropuertos
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto(Aeropuerto_Codigo, Aeropuerto_Descripcion, Aeropuerto_ID_Ciudad)
+		SELECT DISTINCT t.Aeropuerto_Salida_Codigo, t.Aeropuerto_Salida_Descripcion, c.Ciudad_ID --Aeropuerto Salida tiene todos los aeropuertos
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Pais p ON p.Pais_Nombre = t.Aeropuerto_Salida_Pais
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad c on c.Ciudad_ID_Pais = p.Pais_ID and c.Ciudad_Nombre = t.Aeropuerto_Salida_Ciudad
+		WHERE t.Aeropuerto_Salida_Codigo IS NOT NULL
+		  AND t.Aeropuerto_Salida_Descripcion IS NOT NULL
+		  AND t.Aeropuerto_Salida_Pais IS NOT NULL
+		  AND t.Aeropuerto_Salida_Ciudad IS NOT NULL
 	END
 GO
 
@@ -416,14 +537,11 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Excursiones
 			ON p.Proveedor_Nombre = t.Proveedor_Nombre
 			AND p.Proveedor_Mail = t.Proveedor_Mail
 			AND p.Proveedor_Telefono = t.Proveedor_Telefono
-		WHERE t.Proveedor_Nombre IS NOT NULL 
-			AND t.Proveedor_Mail IS NOT NULL
-			AND t.Proveedor_Telefono IS NOT NULL
-			AND t.Excursion_Nombre IS NOT NULL
+		WHERE t.Excursion_Nombre IS NOT NULL 
 			AND t.Excursion_Duracion IS NOT NULL
 			AND t.Excursion_Descripcion IS NOT NULL
 			AND t.Excursion_Horario IS NOT NULL
-			AND t. Excursion_Precio IS NOT NULL
+			AND t.Excursion_Precio IS NOT NULL
 	END
 GO
 
@@ -458,13 +576,7 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agentes
 			on a.Agencia_Nro_Agencia = t.Agencia_Nro_Agencia
 			AND a.Agencia_Telefono = t.Agencia_Telefono
 			AND a.Agencia_Mail = t.Agencia_Mail
-		WHERE t.Agencia_Direccion IS NOT NULL
-		  AND t.Agencia_Localidad IS NOT NULL
-		  AND t.Agencia_Provincia IS NOT NULL
-		  AND t.Agencia_Nro_Agencia IS NOT NULL
-		  AND t.Agencia_Mail IS NOT NULL
-		  AND t.Agencia_Telefono IS NOT NULL
-		  AND t.Agente_Legajo IS NOT NULL
+		WHERE t.Agente_Legajo IS NOT NULL
 		  AND t.Agente_Nombre IS NOT NULL
 		  AND t.Agente_Apellido IS NOT NULL
 		  AND t.Agente_Mail IS NOT NULL
@@ -522,19 +634,6 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes
 			AND t.Solicitud_Fecha_Fin_Tentativa IS NOT NULL
 			AND t.Solicitud_Cant_Pax IS NOT NULL
 			AND t.Solicitud_Presupuesto_Estimado IS NOT NULL
-			AND t.Cliente_Nombre IS NOT NULL
-			AND t.Cliente_Apellido IS NOT NULL
-			AND t.Cliente_Mail IS NOT NULL
-			AND t.Cliente_Dni IS NOT NULL
-			AND t.Cliente_Fecha_Nac IS NOT NULL
-			AND t.Cliente_Tel IS NOT NULL
-			AND t.Agente_Legajo IS NOT NULL
-			AND t.Agente_Nombre IS NOT NULL
-			AND t.Agente_Apellido IS NOT NULL
-			AND t.Agente_Mail IS NOT NULL
-			AND t.Agente_Dni IS NOT NULL
-			AND t.Agente_Fecha_Nac IS NOT NULL
-			AND t.Agente_Telefono IS NOT NULL
 	END
 GO
 
@@ -554,12 +653,6 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes_X_Ciudad
 			AND s.Solicitud_Fecha_Solicitud = t.Solicitud_Fecha_Solicitud
 			AND s.Solicitud_Presupuesto_Estimado = t.Solicitud_Presupuesto_Estimado
 		WHERE t.Detalle_Solicitud_Cant_Dias_Aprox IS NOT NULL
-		  AND t.Solicitud_Nro_Solicitud IS NOT NULL 
-		  AND t.Solicitud_Fecha_Solicitud IS NOT NULL
-		  AND t.Solicitud_Fecha_Inicio_Tentativa IS NOT NULL
-		  AND t.Solicitud_Fecha_Fin_Tentativa IS NOT NULL
-		  AND t.Solicitud_Cant_Pax IS NOT NULL
-		  AND t.Solicitud_Presupuesto_Estimado IS NOT NULL
 		  AND t.Detalle_Solicitud_Ciudad IS NOT NULL
 	END
 GO
@@ -595,20 +688,119 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas
 			AND t.Propuesta_Subtotal IS NOT NULL
 			AND t.Propuesta_Descuento IS NOT NULL
 			AND t.Propuesta_Importe_Total IS NOT NULL
-			AND t.Solicitud_Nro_Solicitud IS NOT NULL 
-			AND t.Solicitud_Fecha_Solicitud IS NOT NULL
-			AND t.Solicitud_Fecha_Inicio_Tentativa IS NOT NULL
-			AND t.Solicitud_Fecha_Fin_Tentativa IS NOT NULL
-			AND t.Solicitud_Cant_Pax IS NOT NULL
-			AND t.Solicitud_Presupuesto_Estimado IS NOT NULL
-			AND t.Agente_Legajo IS NOT NULL
-			AND t.Agente_Nombre IS NOT NULL
-			AND t.Agente_Apellido IS NOT NULL
-			AND t.Agente_Mail IS NOT NULL
-			AND t.Agente_Dni IS NOT NULL
-			AND t.Agente_Fecha_Nac IS NOT NULL
-			AND t.Agente_Telefono IS NOT NULL
 			AND t.Propuesta_Estado IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Reservas
+ AS
+	BEGIN
+	INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva(Reserva_Cod_Reserva, Reserva_Fecha_Reserva)
+		SELECT DISTINCT Detalle_Venta_Excursion_Cod_Reserva, Detalle_Venta_Excursion_Fecha_Reserva
+		FROM gd_esquema.Maestra t
+		WHERE Detalle_Venta_Excursion_Cod_Reserva is not null
+		AND Detalle_Venta_Excursion_Fecha_Reserva IS NOT NULL
+
+		--Dsp de hacer unas querys, se comprobo que ninguno de los 3 tienen codigos de reserva repetidos; xq lo que esto no va a meter nulls
+
+		UNION
+
+		SELECT DISTINCT 
+			t.Detalle_Venta_Hospedaje_Cod_Reserva as Reserva_Cod_Reserva,
+			CAST(NULL AS DATE) AS Reserva_Fecha_Reserva
+		FROM gd_esquema.Maestra t
+		WHERE t.Detalle_Venta_Hospedaje_Cod_Reserva IS NOT NULL
+
+		UNION
+
+		SELECT DISTINCT 
+			t.Detalle_Venta_Vuelo_Cod_Reserva as Reserva_Cod_Reserva,
+			CAST(NULL AS DATE) AS Reserva_Fecha_Reserva
+		FROM gd_esquema.Maestra t
+		WHERE t.Detalle_Venta_Vuelo_Cod_Reserva IS NOT NULL;
+
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Vuelos 
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo(Vuelo_Fecha_Salida, Vuelo_Horario_Salida, Vuelo_Fecha_Llegada, Vuelo_Horario_Llegada, Vuelo_Duracion, Vuelo_Incluye_Carry, Vuelo_Incluye_Valija, Vuelo_Precio, Vuelo_ID_Aerolinea, Vuelo_ID_Aeropuerto_Llegada, Vuelo_ID_Aeropuerto_Salida)
+		SELECT DISTINCT  t.Vuelo_Fecha_Salida, t.Vuelo_Horario_Salida, t.Vuelo_Fecha_Llegada, t.Vuelo_Horario_Llegada, t.Vuelo_Duracion, t.Vuelo_Incluye_Carry, t.Vuelo_Incluye_Valija, t.Vuelo_Precio, al.Aerolinea_ID, ap1.Aeropuerto_ID, ap2.Aeropuerto_ID
+		FROM  gd_esquema.Maestra t 
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea al
+			ON al.Aerolinea_Codigo = t.Aerolinea_Codigo
+			AND al.Aerolinea_Nombre = t.Aerolinea_Nombre
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap1
+			ON ap1.Aeropuerto_Codigo = t.Aeropuerto_Llegada_Codigo
+			AND ap1.Aeropuerto_Descripcion = t.Aeropuerto_Llegada_Descripcion
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap2
+			ON ap2.Aeropuerto_Codigo = t.Aeropuerto_Salida_Codigo
+			AND ap2.Aeropuerto_Descripcion = t.Aeropuerto_Salida_Descripcion
+		WHERE t.Vuelo_Fecha_Salida IS NOT NULL
+			AND t.Vuelo_Horario_Salida IS NOT NULL
+			AND t.Vuelo_Fecha_Llegada IS NOT NULL
+			AND t.Vuelo_Horario_Llegada IS NOT NULL
+			AND t.Vuelo_Duracion IS NOT NULL
+			AND t.Vuelo_Incluye_Carry IS NOT NULL
+			AND t.Vuelo_Incluye_Valija IS NOT NULL
+			AND t.Vuelo_Precio IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Hospedajes
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje(Hospedaje_Nombre, Hospedaje_Incluye_Desayuno, Hospedaje_Check_In, Hospedaje_Check_Out, Hospedaje_ID_Ciudad, Hospedaje_ID_Direccion)
+		SELECT DISTINCT  t.Hospedaje_Nombre, t.Hospedaje_Incluye_Desayuno, t.Hospedaje_Check_In, t.Hospedaje_Check_Out, c.Ciudad_ID, d.Direccion_ID
+		FROM  gd_esquema.Maestra t 
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Direccion d
+			ON d.Direccion = t.Hospedaje_Direccion
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Pais p ON p.Pais_Nombre = t.Hospedaje_Pais
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad c on c.Ciudad_ID_Pais = p.Pais_ID and c.Ciudad_Nombre = t.Hospedaje_Ciudad
+		WHERE t.Hospedaje_Nombre IS NOT NULL
+			AND t.Hospedaje_Incluye_Desayuno IS NOT NULL
+			AND t.Hospedaje_Check_Out IS NOT NULL
+			AND t.Hospedaje_Check_In IS NOT NULL
+			
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion(Habitacion_Nombre, Habitacion_Descripcion, Habitacion_Precio, Habitacion_ID_Hospedaje)
+		SELECT DISTINCT  t.Habitacion_Nombre, t.Habitacion_Descripcion, t.Habitacion_Precio_Noche, h.Hospedaje_ID
+		FROM  gd_esquema.Maestra t 
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje h
+			ON h.Hospedaje_Nombre = t.Hospedaje_Nombre
+			AND h.Hospedaje_Check_In = t.Hospedaje_Check_In
+			AND h.Hospedaje_Check_Out = t.Hospedaje_Check_Out
+			and t.Hospedaje_Incluye_Desayuno = t.Hospedaje_Incluye_Desayuno
+		WHERE t.Habitacion_Nombre IS NOT NULL
+			AND t.Habitacion_Descripcion IS NOT NULL
+			AND t.Habitacion_Precio_Noche IS NOT NULL
+			
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago(Medio_Pago_Nombre)
+		SELECT DISTINCT Venta_Medio_Pago
+		FROM gd_esquema.Maestra
+		WHERE Venta_Medio_Pago IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta
+		SELECT DISTINCT Venta_Canal_Venta
+		FROM gd_esquema.Maestra
+		WHERE Venta_Canal_Venta IS NOT NULL
 	END
 GO
 
@@ -624,6 +816,7 @@ GO
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ciudades
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Alianzas
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aerolineas
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aeropuertos
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Proveedores
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Excursiones
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agencias
@@ -632,6 +825,12 @@ GO
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes_X_Ciudad
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Reservas
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Vuelos 
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Hospedajes
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -645,6 +844,7 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Pais)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Alianza)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Proveedor)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Excursion)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Agencia)
@@ -653,6 +853,12 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud_X_Ciudad)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta)
 )
    BEGIN
 	PRINT 'Tablas migradas correctamente.';
@@ -664,3 +870,4 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta)
 	THROW 52002, 'Hubo un error al migrar las tablas.',1;
    END
 GO
+
