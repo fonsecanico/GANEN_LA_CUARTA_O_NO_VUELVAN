@@ -72,7 +72,45 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta;
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Medios_Pago')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago;
 
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas_X_Propuesta')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Propuesta;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Propuestas_X_Vuelo')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Vuelo;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Propuestas_X_Habitacion')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas_X_Vuelo')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas_X_Habitacion')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion;
+
+GO
+
 --DROP Preventivo de Tablas OLTP------------------------------------------------------
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta_X_Habitacion')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta_X_Vuelo')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Vuelo;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Propuesta_X_Habitacion')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Habitacion;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Propuesta_X_Vuelo')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Vuelo;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta_X_Propuesta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Propuesta;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta;
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Propuesta')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta;
@@ -298,7 +336,7 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud_X_Ciudad (
 
 CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta (
 	Propuesta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
-	Propouesta_Nro_Propouesta bigint not null,
+	Propuesta_Nro_Propuesta bigint not null,
 	Propuesta_Fecha_Emision date not null,
 	Propuesta_Fecha_Vigencia_Hasta date not null,
 	Propuesta_Fecha_Desde date not null,
@@ -367,6 +405,85 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta(
 CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago(
 	Medio_Pago_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
 	Medio_Pago_Nombre NVARCHAR(510) not null
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta (
+	Venta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Venta_Nro_Venta bigint not null,
+	Venta_Fecha_Venta date not null,
+	Venta_Subtotal decimal(18,2) not null,
+	Venta_Descuento decimal(18,2) not null,
+	Venta_Importe_Total decimal(18,2) not null,
+	Venta_ID_Cliente BIGINT not null,
+	Venta_ID_Agente BIGINT not null,
+	Venta_ID_Agencia BIGINT not null,
+	Venta_ID_Medio_Pago BIGINT not null,
+	Venta_ID_Canal_Venta BIGINT not null,
+	FOREIGN KEY (Venta_ID_Cliente) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente(Cliente_ID),
+	FOREIGN KEY (Venta_ID_Agente) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Agente(Agente_ID),
+	FOREIGN KEY (Venta_ID_Agencia) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Agencia(Agencia_ID),
+	FOREIGN KEY (Venta_ID_Medio_Pago) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago(Medio_Pago_ID),
+	FOREIGN KEY (Venta_ID_Canal_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta(Canal_Venta_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Propuesta (
+	Venta_X_Propuesta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Venta_X_Propuesta_ID_Venta BIGINT not null,
+	Venta_X_Propuesta_ID_Propuesta BIGINT not null,
+	FOREIGN KEY (Venta_X_Propuesta_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID),
+	FOREIGN KEY (Venta_X_Propuesta_ID_Propuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propuesta_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Vuelo (
+	Propuesta_X_Vuelo_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Propuesta_X_Vuelo_Cantidad_Pasajes int not null,
+	Propuesta_X_Vuelo_Precio_Unitario decimal(18,2) not null,
+	Propuesta_X_Vuelo_Subtotal decimal(18,2) not null,
+	Propuesta_X_Vuelo_ID_Vuelo BIGINT not null,
+	Propuesta_X_Vuelo_ID_Propuesta BIGINT not null,
+	FOREIGN KEY (Propuesta_X_Vuelo_ID_Vuelo) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo(Vuelo_ID),
+	FOREIGN KEY (Propuesta_X_Vuelo_ID_Propuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propuesta_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Habitacion (
+	Propuesta_X_Habitacion_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Propuesta_X_Habitacion_Fecha_Desde date not null,
+	Propuesta_X_Habitacion_Fecha_Hasta date not null,
+	Propuesta_X_Habitacion_Cantidad_Habitaciones int not null,
+	Propuesta_X_Habitacion_Precio_Unitario decimal(18,2) not null,
+	Propuesta_X_Habitacion_Subtotal decimal(18,2) not null,
+	Propuesta_X_Habitacion_ID_Habitacion BIGINT not null,
+	Propuesta_X_Habitacion_ID_Propuesta BIGINT not null,
+	FOREIGN KEY (Propuesta_X_Habitacion_ID_Habitacion) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion(Habitacion_ID),
+	FOREIGN KEY (Propuesta_X_Habitacion_ID_Propuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propuesta_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Vuelo (
+	Venta_X_Vuelo_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Venta_X_Vuelo_Cantidad_Pasajes int not null,
+	Venta_X_Vuelo_Precio_Unitario decimal(18,2) not null,
+	Venta_X_Vuelo_Subtotal decimal(18,2) not null,
+	Venta_X_Vuelo_ID_Vuelo BIGINT not null,
+	Venta_X_Vuelo_ID_Venta BIGINT not null,
+	Venta_X_Vuelo_ID_Reserva BIGINT not null,
+	FOREIGN KEY (Venta_X_Vuelo_ID_Vuelo) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo(Vuelo_ID),
+	FOREIGN KEY (Venta_X_Vuelo_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID),
+	FOREIGN KEY (Venta_X_Vuelo_ID_Reserva) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva(Reserva_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion (
+	Venta_X_Habitacion_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Venta_X_Habitacion_Fecha_Desde date not null,
+	Venta_X_Habitacion_Fecha_Hasta date not null,
+	Venta_X_Habitacion_Cantidad_Habitaciones int not null,
+	Venta_X_Habitacion_Precio_Unitario decimal(18,2) not null,
+	Venta_X_Habitacion_Subtotal decimal(18,2) not null,
+	Venta_X_Habitacion_ID_Habitacion BIGINT not null,
+	Venta_X_Habitacion_ID_Venta BIGINT not null,
+	Venta_X_Habitacion_ID_Reserva BIGINT not null,
+	FOREIGN KEY (Venta_X_Habitacion_ID_Habitacion) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion(Habitacion_ID),
+	FOREIGN KEY (Venta_X_Habitacion_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID),
+	FOREIGN KEY (Venta_X_Habitacion_ID_Reserva) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva(Reserva_ID)
 );
 
 GO
@@ -660,7 +777,7 @@ GO
 CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas 
  AS
 	BEGIN
-		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propouesta_Nro_Propouesta, Propuesta_Fecha_Emision, Propuesta_Fecha_Vigencia_Hasta, Propuesta_Fecha_Desde, Propuesta_Fecha_Hasta, Propouesta_Subtotal, Propuesta_Descuento, Propuesta_Importe_Total, Propuesta_ID_Solicitud, Propuesta_ID_Agente, Propuesta_ID_Estado)
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propuesta_Nro_Propuesta, Propuesta_Fecha_Emision, Propuesta_Fecha_Vigencia_Hasta, Propuesta_Fecha_Desde, Propuesta_Fecha_Hasta, Propouesta_Subtotal, Propuesta_Descuento, Propuesta_Importe_Total, Propuesta_ID_Solicitud, Propuesta_ID_Agente, Propuesta_ID_Estado)
 		SELECT DISTINCT  t.Propuesta_Nro_Propuesta, t.Propuesta_Fecha_Emision, t.Propuesta_Vigencia_Hasta, t.Propuesta_Fecha_Desde, t.Propuesta_Fecha_Hasta, t.Propuesta_Subtotal, t.Propuesta_Descuento, t.Propuesta_Importe_Total, s.Solicitud_ID, a.Agente_ID, e.Estado_Propuesta_ID
 		FROM  gd_esquema.Maestra t 
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud s
@@ -804,6 +921,180 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta
 	END
 GO
 
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_Nro_Venta, Venta_Fecha_Venta, Venta_Subtotal, Venta_Descuento, Venta_Importe_Total, Venta_ID_Cliente, Venta_ID_Agente, Venta_ID_Agencia, Venta_ID_Medio_Pago, Venta_ID_Canal_Venta)
+		SELECT DISTINCT t.Venta_Nro_Venta, t.Venta_Fecha_Venta, t.Venta_Subtotal, t.Venta_Descuento, t.Venta_Importe_Total, c.Cliente_ID, agt.Agente_ID, aci.Agencia_ID, mp.Medio_Pago_ID, cv.Canal_venta_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente c
+			ON c.Cliente_DNI = t.Cliente_Dni
+			AND c.Cliente_Nombre = t.Cliente_Nombre
+			AND c.Cliente_Apellido = t.Cliente_Apellido
+			AND c.Cliente_Telefono = t.Cliente_Tel
+			AND c.Cliente_Mail = t.Cliente_Mail
+			AND c.Cliente_Fecha_Nac = t.Cliente_Fecha_Nac
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agente agt
+			ON agt.Agente_DNI = t.Agente_Dni
+			AND agt.Agente_Nombre = t.Agente_Nombre
+			AND agt.Agente_Apellido = t.Agente_Apellido
+			AND agt.Agente_Legajo = t.Agente_Legajo
+			AND agt.Agente_Mail = t.Agente_Mail
+			AND agt.Agente_Fecha_Nac = t.Agente_Fecha_Nac
+			AND agt.Agente_Telefono = t.Agente_Telefono
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agencia aci 
+			ON aci.Agencia_Nro_Agencia = t.Agencia_Nro_Agencia
+			AND aci.Agencia_Telefono = t.Agencia_Telefono
+			AND aci.Agencia_Mail = t.Agencia_Mail
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago mp
+			ON mp.Medio_Pago_Nombre = t.Venta_Medio_Pago
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta cv
+			ON cv.Canal_Venta_Nombre = t.Venta_Canal_Venta
+		WHERE t.Venta_Nro_Venta IS NOT NULL
+		  AND t.Venta_Fecha_Venta IS NOT NULL
+		  AND t.Venta_Subtotal IS NOT NULL
+		  AND t.Venta_Descuento IS NOT NULL
+		  AND t.Venta_Importe_Total IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Propuesta
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Propuesta(Venta_X_Propuesta_ID_Venta, Venta_X_Propuesta_ID_Propuesta)
+		SELECT DISTINCT v.Venta_ID, p.Propuesta_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Venta v
+			ON v.Venta_Nro_Venta = t.Venta_Nro_Venta
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
+			ON p.Propuesta_Nro_Propuesta = t.Propuesta_Nro_Propuesta
+		WHERE t.Propuesta_Nro_Propuesta IS NOT NULL
+		  AND t.Venta_Nro_Venta IS NOT NULL
+
+		 
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Vuelo
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Vuelo(Propuesta_X_Vuelo_Cantidad_Pasajes, Propuesta_X_Vuelo_Precio_Unitario, Propuesta_X_Vuelo_Subtotal, Propuesta_X_Vuelo_ID_Vuelo, Propuesta_X_Vuelo_ID_Propuesta)
+		SELECT DISTINCT t.Detalle_Propuesta_Vuelo_Cant_Pasajes, t.Detalle_Propuesta_Vuelo_Precio, t.Detalle_Propuesta_Vuelo_Subtotal, v.Vuelo_ID, p.Propuesta_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea al
+			ON al.Aerolinea_Codigo = t.Aerolinea_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap1
+			ON ap1.Aeropuerto_Codigo = t.Aeropuerto_Llegada_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap2
+			ON ap2.Aeropuerto_Codigo = t.Aeropuerto_Salida_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo v
+			ON v.Vuelo_ID_Aerolinea = al.Aerolinea_ID
+			AND v.Vuelo_Duracion = t.Vuelo_Duracion
+			AND v.Vuelo_Fecha_Llegada = t.Vuelo_Fecha_Llegada
+			AND v.Vuelo_Fecha_Salida = t.Vuelo_Fecha_Salida
+			AND v.Vuelo_Horario_Llegada = t.Vuelo_Horario_Llegada
+			AND v.Vuelo_Horario_Salida = t.Vuelo_Horario_Salida
+			AND v.Vuelo_Incluye_Carry = t.Vuelo_Incluye_Carry
+			AND v.Vuelo_Incluye_Valija = t.Vuelo_Incluye_Valija
+			AND v.Vuelo_ID_Aeropuerto_Llegada = ap1.Aeropuerto_ID
+			AND v.Vuelo_ID_Aeropuerto_Salida = ap2.Aeropuerto_ID
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
+			ON p.Propuesta_Nro_Propuesta = t.Propuesta_Nro_Propuesta
+		WHERE t.Detalle_Propuesta_Vuelo_Cant_Pasajes IS NOT NULL
+		  AND t.Detalle_Propuesta_Vuelo_Precio IS NOT NULL
+		  AND t.Detalle_Propuesta_Vuelo_Subtotal IS NOT NULL
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Habitacion(Propuesta_X_Habitacion_Fecha_Desde, Propuesta_X_Habitacion_Fecha_Hasta, Propuesta_X_Habitacion_Cantidad_Habitaciones, Propuesta_X_Habitacion_Precio_Unitario, Propuesta_X_Habitacion_Subtotal, Propuesta_X_Habitacion_ID_Habitacion, Propuesta_X_Habitacion_ID_Propuesta)
+		SELECT DISTINCT t.Detalle_Propuesta_Hospedaje_Fecha_Desde, t.Detalle_Propuesta_Hospedaje_Fecha_Hasta, t.Detalle_Propuesta_Hospedaje_Cant, t.Detalle_Propuesta_Hospedaje_Precio, t.Detalle_Propuesta_Hospedaje_Subtotal, h.Habitacion_ID, p.Propuesta_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje ho
+			ON ho.Hospedaje_Nombre = t.Hospedaje_Nombre
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion h 
+			ON h.Habitacion_Nombre = t.Habitacion_Nombre
+			AND h.Habitacion_Descripcion = t.Habitacion_Descripcion
+			AND h.Habitacion_Precio = t.Habitacion_Precio_Noche
+			AND h.Habitacion_ID_Hospedaje = ho.Hospedaje_ID
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
+			ON p.Propuesta_Nro_Propuesta = t.Propuesta_Nro_Propuesta
+		WHERE t.Detalle_Propuesta_Hospedaje_Fecha_Desde IS NOT NULL
+		  AND t.Detalle_Propuesta_Hospedaje_Fecha_Hasta IS NOT NULL
+		  AND t.Detalle_Propuesta_Hospedaje_Cant IS NOT NULL
+		  AND t.Detalle_Propuesta_Hospedaje_Precio IS NOT NULL
+		  AND t.Detalle_Propuesta_Hospedaje_Subtotal IS NOT NULL
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Vuelo(Venta_X_Vuelo_Cantidad_Pasajes, Venta_X_Vuelo_Precio_Unitario, Venta_X_Vuelo_Subtotal, Venta_X_Vuelo_ID_Vuelo, Venta_X_Vuelo_ID_Venta, Venta_X_Vuelo_ID_Reserva)
+		SELECT DISTINCT t.Detalle_Venta_Vuelo_Cantidad_Pasajes, t.Detalle_Venta_Vuelo_Precio_Unitario, t.Detalle_Venta_Vuelo_Subtotal, v.Vuelo_ID, vt.Venta_ID, r.Reserva_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aerolinea al
+			ON al.Aerolinea_Codigo = t.Aerolinea_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap1
+			ON ap1.Aeropuerto_Codigo = t.Aeropuerto_Llegada_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aeropuerto ap2
+			ON ap2.Aeropuerto_Codigo = t.Aeropuerto_Salida_Codigo
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Vuelo v
+			ON v.Vuelo_ID_Aerolinea = al.Aerolinea_ID
+			AND v.Vuelo_Duracion = t.Vuelo_Duracion
+			AND v.Vuelo_Fecha_Llegada = t.Vuelo_Fecha_Llegada
+			AND v.Vuelo_Fecha_Salida = t.Vuelo_Fecha_Salida
+			AND v.Vuelo_Horario_Llegada = t.Vuelo_Horario_Llegada
+			AND v.Vuelo_Horario_Salida = t.Vuelo_Horario_Salida
+			AND v.Vuelo_Incluye_Carry = t.Vuelo_Incluye_Carry
+			AND v.Vuelo_Incluye_Valija = t.Vuelo_Incluye_Valija
+			AND v.Vuelo_ID_Aeropuerto_Llegada = ap1.Aeropuerto_ID
+			AND v.Vuelo_ID_Aeropuerto_Salida = ap2.Aeropuerto_ID
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Venta vt
+			ON vt.Venta_Nro_Venta = t.Venta_Nro_Venta
+
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva r
+			ON r.Reserva_Cod_Reserva = t.Detalle_Venta_Vuelo_Cod_Reserva
+		WHERE t.Detalle_Venta_Vuelo_Cantidad_Pasajes IS NOT NULL
+		  AND t.Detalle_Venta_Vuelo_Precio_Unitario IS NOT NULL
+		  AND t.Detalle_Venta_Vuelo_Subtotal IS NOT NULL
+		  AND t.Detalle_Venta_Vuelo_Cod_Reserva IS NOT NULL
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion(Venta_X_Habitacion_Fecha_Desde, Venta_X_Habitacion_Fecha_Hasta, Venta_X_Habitacion_Cantidad_Habitaciones, Venta_X_Habitacion_Precio_Unitario, Venta_X_Habitacion_Subtotal, Venta_X_Habitacion_ID_Habitacion, Venta_X_Habitacion_ID_Venta, Venta_X_Habitacion_ID_Reserva)
+		SELECT DISTINCT t.Detalle_Venta_Hospedaje_Fecha_Desde, t.Detalle_Venta_Hospedaje_Fecha_Hasta, t.Detalle_Venta_Hospedaje_Cantidad, t.Detalle_Venta_Hospedaje_Precio_Unitario, t.Detalle_Venta_Hospedaje_Subtotal, h.Habitacion_ID, vt.Venta_ID, r.Reserva_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje ho
+			ON ho.Hospedaje_Nombre = t.Hospedaje_Nombre
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion h 
+			ON h.Habitacion_Nombre = t.Habitacion_Nombre
+			AND h.Habitacion_Descripcion = t.Habitacion_Descripcion
+			AND h.Habitacion_Precio = t.Habitacion_Precio_Noche
+			AND h.Habitacion_ID_Hospedaje = ho.Hospedaje_ID
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Venta vt
+			ON vt.Venta_Nro_Venta = t.Venta_Nro_Venta
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva r
+			ON r.Reserva_Cod_Reserva = t.Detalle_Venta_Hospedaje_Cod_Reserva
+		WHERE t.Detalle_Venta_Hospedaje_Fecha_Desde IS NOT NULL
+		  AND t.Detalle_Venta_Hospedaje_Fecha_Hasta IS NOT NULL
+		  AND t.Detalle_Venta_Hospedaje_Cantidad IS NOT NULL
+		  AND t.Detalle_Venta_Hospedaje_Precio_Unitario IS NOT NULL
+		  AND t.Detalle_Venta_Hospedaje_Subtotal IS NOT NULL
+		  AND t.Detalle_Venta_Hospedaje_Cod_Reserva IS NOT NULL
+		  
+	END
+GO
+
 --Ejecucion de Stored Procedures---------------------------
 
  BEGIN TRANSACTION
@@ -831,6 +1122,12 @@ GO
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Propuesta
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Vuelo
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -859,6 +1156,12 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Medio_Pago)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Propuesta)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Vuelo)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Habitacion)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Vuelo)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion)
 )
    BEGIN
 	PRINT 'Tablas migradas correctamente.';
