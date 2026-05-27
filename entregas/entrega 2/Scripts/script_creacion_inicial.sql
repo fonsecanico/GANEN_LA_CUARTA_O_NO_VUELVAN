@@ -106,6 +106,12 @@ GO
 
 --DROP Preventivo de Tablas OLTP------------------------------------------------------
 
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Encuesta_Venta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Venta;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Encuesta_Propuesta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Propuesta;
+
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Encuesta_X_Aspecto')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto;
 
@@ -549,6 +555,22 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto (
 	FOREIGN KEY (Encuesta_X_Aspecto_ID_Aspecto) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto(Aspecto_ID)
 );
 
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Venta (
+	Encuesta_Venta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Encuesta_Venta_ID_Encuesta BIGINT not null,
+	Encuesta_Venta_ID_Venta BIGINT not null,
+	FOREIGN KEY (Encuesta_Venta_ID_Encuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta(Encuesta_ID),
+	FOREIGN KEY (Encuesta_Venta_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Propuesta (
+	Encuesta_Propuesta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Encuesta_Propuesta_ID_Encuesta BIGINT not null,
+	Encuesta_Propuesta_ID_Propuesta BIGINT not null,
+	FOREIGN KEY (Encuesta_Propuesta_ID_Encuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta(Encuesta_ID),
+	FOREIGN KEY (Encuesta_Propuesta_ID_Propuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta(Propuesta_ID)
+);
+
 
 GO
 
@@ -647,7 +669,7 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ciudades
  AS
 	BEGIN
 		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Ciudad(Ciudad_Nombre, Ciudad_ID_Pais)
-		SELECT DISTINCT m.Hospedaje_Ciudad, p.Pais_ID --Todas las ciudades estan en Hospedaje_Pais
+		SELECT DISTINCT m.Hospedaje_Ciudad, p.Pais_ID --Todas las ciudades estan en Hospedaje_Ciudad
 		FROM gd_esquema.Maestra m
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Pais p on p.Pais_Nombre = m.Hospedaje_Pais
 		WHERE Propuesta_Estado IS NOT NULL
