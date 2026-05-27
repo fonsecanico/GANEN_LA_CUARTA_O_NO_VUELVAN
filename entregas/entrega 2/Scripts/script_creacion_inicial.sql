@@ -90,9 +90,33 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo;
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas_X_Habitacion')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion;
 
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Ventas_X_Excursion')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Excursion;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Encuestas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Aspectos')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aspectos;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'migrar_Encuestas_X_Aspecto')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto;
+
 GO
 
 --DROP Preventivo de Tablas OLTP------------------------------------------------------
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Encuesta_X_Aspecto')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Encuesta')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Aspecto')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto;
+
+IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta_X_Excursion')
+DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Excursion;
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'Venta_X_Habitacion')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion;
@@ -485,6 +509,46 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion (
 	FOREIGN KEY (Venta_X_Habitacion_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID),
 	FOREIGN KEY (Venta_X_Habitacion_ID_Reserva) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva(Reserva_ID)
 );
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Excursion (
+	Venta_X_Excursion_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Venta_X_Excursion_Fecha_Reserva date not null,
+	Venta_X_Excursion_Cantidad int not null,
+	Venta_X_Excursion_Precio_Unitario decimal(18,2) not null,
+	Venta_X_Excursion_Subtotal decimal(18,2) not null,
+	Venta_X_Excursion_ID_Excursion BIGINT not null,
+	Venta_X_Excursion_ID_Venta BIGINT not null,
+	Venta_X_Excursion_ID_Reserva BIGINT not null,
+	FOREIGN KEY (Venta_X_Excursion_ID_Excursion) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Excursion(Excursion_ID),
+	FOREIGN KEY (Venta_X_Excursion_ID_Venta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Venta(Venta_ID),
+	FOREIGN KEY (Venta_X_Excursion_ID_Reserva) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva(Reserva_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto (
+	Aspecto_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Aspecto_Tipo NVARCHAR(510) not null
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta (
+	Encuesta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Encuesta_Fecha_Encuesta date not null,
+	Encuesta_Codigo_Encuesta bigint not null,
+	Encuesta_Comentarios nvarchar(max) not null,
+	Encuesta_ID_Cliente BIGINT not null,
+	Encuesta_ID_Agente BIGINT not null,
+	FOREIGN KEY (Encuesta_ID_Cliente) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente(Cliente_ID),
+	FOREIGN KEY (Encuesta_ID_Agente) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Agente(Agente_ID)
+);
+
+CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto (
+	Encuesta_X_Aspecto_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
+	Encuesta_X_Aspecto_Puntaje int not null,
+	Encuesta_X_Aspecto_ID_Encuesta BIGINT not null,
+	Encuesta_X_Aspecto_ID_Aspecto BIGINT not null,
+	FOREIGN KEY (Encuesta_X_Aspecto_ID_Encuesta) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta(Encuesta_ID),
+	FOREIGN KEY (Encuesta_X_Aspecto_ID_Aspecto) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto(Aspecto_ID)
+);
+
 
 GO
 
@@ -1095,6 +1159,90 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
 	END
 GO
 
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Excursion
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Excursion(Venta_X_Excursion_Fecha_Reserva, Venta_X_Excursion_Cantidad, Venta_X_Excursion_Precio_Unitario, Venta_X_Excursion_Subtotal, Venta_X_Excursion_ID_Excursion, Venta_X_Excursion_ID_Reserva, Venta_X_Excursion_ID_Venta)
+		SELECT DISTINCT t.Detalle_Venta_Excursion_Fecha_Reserva, t.Detalle_Venta_Excursion_Cant, t.Detalle_Venta_Excursion_Precio_Unitario, t.Detalle_Venta_Excursion_Subtotal, e.Excursion_ID, r.Reserva_ID, vt.Venta_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Excursion e
+			ON e.Excursion_Nombre = t.Excursion_Nombre
+			AND e.Excursion_Descripcion = t.Excursion_Descripcion
+			AND e.Excursion_Horario = t.Excursion_Horario
+			AND e.Excursion_Precio = t.Excursion_Precio
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Venta vt
+			ON vt.Venta_Nro_Venta = t.Venta_Nro_Venta
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Reserva r
+			ON r.Reserva_Cod_Reserva = t.Detalle_Venta_Excursion_Cod_Reserva
+		WHERE t.Detalle_Venta_Excursion_Fecha_Reserva IS NOT NULL
+		  AND t.Detalle_Venta_Excursion_Cant IS NOT NULL
+		  AND t.Detalle_Venta_Excursion_Precio_Unitario IS NOT NULL
+		  AND t.Detalle_Venta_Excursion_Subtotal IS NOT NULL
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aspectos
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto
+		SELECT DISTINCT Aspecto_Aspecto
+		FROM gd_esquema.Maestra
+		WHERE Aspecto_Aspecto IS NOT NULL
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta(Encuesta_Codigo_Encuesta, Encuesta_Fecha_Encuesta, Encuesta_Comentarios, Encuesta_ID_Cliente, Encuesta_ID_Agente)
+		SELECT DISTINCT t.Encuesta_Codigo_Encuesta, t.Encuesta_Fecha_Encuesta, t.Encuesta_Comentarios, c.Cliente_ID, a.Agente_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agente a
+			ON a.Agente_DNI = t.Agente_Dni
+			AND a.Agente_Nombre = t.Agente_Nombre
+			AND a.Agente_Apellido = t.Agente_Apellido
+			AND a.Agente_Legajo = t.Agente_Legajo
+			AND a.Agente_Mail = t.Agente_Mail
+			AND a.Agente_Fecha_Nac = t.Agente_Fecha_Nac
+			AND a.Agente_Telefono = t.Agente_Telefono
+			AND a.Agente_Nombre = t.Agente_Nombre
+			AND a.Agente_Apellido = t.Agente_Apellido
+			AND a.Agente_Legajo = t.Agente_Legajo
+			AND a.Agente_Mail = t.Agente_Mail
+			AND a.Agente_Fecha_Nac = t.Agente_Fecha_Nac
+			AND a.Agente_Telefono = t.Agente_Telefono
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente c
+			ON c.Cliente_DNI = t.Cliente_Dni
+			AND c.Cliente_Nombre = t.Cliente_Nombre
+			AND c.Cliente_Apellido = t.Cliente_Apellido
+			AND c.Cliente_Telefono = t.Cliente_Tel
+			AND c.Cliente_Mail = t.Cliente_Mail
+			AND c.Cliente_Fecha_Nac = t.Cliente_Fecha_Nac
+		WHERE t.Encuesta_Codigo_Encuesta IS NOT NULL
+		  AND t.Encuesta_Fecha_Encuesta IS NOT NULL
+		  AND t.Encuesta_Comentarios IS NOT NULL
+		  
+	END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto
+ AS
+	BEGIN
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto(Encuesta_X_Aspecto_Puntaje, Encuesta_X_Aspecto_ID_Encuesta, Encuesta_X_Aspecto_ID_Aspecto)
+		SELECT DISTINCT t.Detalle_Encuesta_Puntaje, e.Encuesta_ID, a.Aspecto_ID
+		FROM gd_esquema.Maestra t
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta e
+			ON e.Encuesta_Codigo_Encuesta = t.Encuesta_Codigo_Encuesta
+			AND e.Encuesta_Comentarios = t.Encuesta_Comentarios
+			AND e.Encuesta_Fecha_Encuesta = t.Encuesta_Fecha_Encuesta
+		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto a
+			ON a.Aspecto_Tipo = t.Aspecto_Aspecto
+		WHERE t.Detalle_Encuesta_Puntaje IS NOT NULL
+		  
+	END
+GO
+
 --Ejecucion de Stored Procedures---------------------------
 
  BEGIN TRANSACTION
@@ -1128,6 +1276,10 @@ GO
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Excursion
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aspectos
+	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
@@ -1162,6 +1314,10 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Vuelo)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta_X_Habitacion)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Vuelo)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Excursion)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto)
 )
    BEGIN
 	PRINT 'Tablas migradas correctamente.';
