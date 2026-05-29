@@ -145,17 +145,17 @@ entity "Propuesta_X_Vuelo" as propuesta_vuelo {
     Propuesta_X_Vuelo_Precio_Unitario: decimal(18,2)
     Propuesta_X_Vuelo_Subtotal: decimal(18,2)
 }
-entity "Propuesta_X_Hospedaje" as propuesta_hospedaje {
-    *Propuesta_X_Hospedaje_ID: bigint identity(1,1) <<PK>>
+entity "Propuesta_X_Habitacion" as propuesta_habitacion {
+    *Propuesta_X_Habitacion_ID: bigint identity(1,1) <<PK>>
     --
-    Propuesta_X_Hospedaje_ID_Propuesta: bigint <<FK>>
-    Propuesta_X_Hospedaje_ID_Hospedaje: bigint <<FK>>
-    Propuesta_X_Hospedaje_ID_Habitacion: bigint <<FK>>
-    Propuesta_X_Hospedaje_Fecha_Desde: date
-    Propuesta_X_Hospedaje_Fecha_Hasta: date
-    Propuesta_X_Hospedaje_Cantidad_Habitaciones: int
-    Propuesta_X_Hospedaje_Precio_Unitario: decimal(18,2)
-    Propuesta_X_Hospedaje_Subtotal: decimal(18,2)
+    Propuesta_X_Habitacion_ID_Propuesta: bigint <<FK>>
+    Propuesta_X_Habitacion_ID_Hospedaje: bigint <<FK>>
+    Propuesta_X_Habitacion_ID_Habitacion: bigint <<FK>>
+    Propuesta_X_Habitacion_Fecha_Desde: date
+    Propuesta_X_Habitacion_Fecha_Hasta: date
+    Propuesta_X_Habitacion_Cantidad_Habitaciones: int
+    Propuesta_X_Habitacion_Precio_Unitario: decimal(18,2)
+    Propuesta_X_Habitacion_Subtotal: decimal(18,2)
 }
 'hospedaje y habitacion
 entity "Hospedaje" as hospedaje {
@@ -218,18 +218,18 @@ entity "Venta_X_Vuelo" as venta_vuelo {
     Venta_X_Vuelo_Vuelo_Precio_Unitario: decimal(18,2)
     Venta_X_Vuelo_Subtotal: decimal(18,2)
 }
-entity "Venta_X_Hospedaje" as venta_hospedaje {
-    *Venta_X_Hospedaje_ID: bigint identity(1,1)
+entity "Venta_X_Habitacion" as venta_habitacion {
+    *Venta_X_Habitacion_ID: bigint identity(1,1)
     --
-    Venta_X_Hospedaje_ID_Venta: bigint <<FK>>
-    Venta_X_Hospedaje_ID_Hospedaje: bigint <<FK>>
-    Venta_X_Hospedaje_ID_Habitacion: bigint <<FK>>
-    Venta_X_Hospedaje_ID_Reserva: bigint<<FK>>
-    Venta_X_Hospedaje_Hospedaje_Fecha_Desde: date
-    Venta_X_Hospedaje_Hospedaje_Fecha_Hasta: date
-    Venta_X_Hospedaje_Hospedaje_Cantidad: int
-    Venta_X_Hospedaje_Hospedaje_Precio_Unitario: decimal(18,2)
-    Venta_X_Hospedaje_Subtotal: decimal(18,2)
+    Venta_X_Habitacion_ID_Venta: bigint <<FK>>
+    Venta_X_Habitacion_ID_Hospedaje: bigint <<FK>>
+    Venta_X_Habitacion_ID_Habitacion: bigint <<FK>>
+    Venta_X_Habitacion_ID_Reserva: bigint<<FK>>
+    Venta_X_Habitacion_Hospedaje_Fecha_Desde: date
+    Venta_X_Habitacion_Hospedaje_Fecha_Hasta: date
+    Venta_X_Habitacion_Hospedaje_Cantidad: int
+    Venta_X_Habitacion_Hospedaje_Precio_Unitario: decimal(18,2)
+    Venta_X_Habitacion_Subtotal: decimal(18,2)
 }
 entity "Venta_X_Excursion" as venta_excursion {
     *Venta_X_Excursion_ID: bigint identity(1,1) <<PK>>
@@ -241,6 +241,12 @@ entity "Venta_X_Excursion" as venta_excursion {
     Venta_X_Excursion_Excursion_Cantidad: int
     Venta_X_Excursion_Excursion_Precio_Unitario: decimal(18,2)
     Venta_X_Excursion_Subtotal: decimal(18,2)
+}
+entity "Venta_X_Propuesta" as venta_propuesta {
+    *Venta_X_Propuesta_ID: bigint identity(1,1) <<PK>>
+    --
+    Venta_X_Propuesta_ID_Venta: bigint<<FK>>,
+    Venta_X_Propuesta_ID_Propuesta: bigint<<FK>>,
 }
 ' encuesta
 entity "Encuesta" as encuesta {
@@ -286,6 +292,7 @@ entity "Ciudad" as ciudad {
     *Ciudad_ID: bigint identity(1,1) <<PK>>
     --
     Ciudad_Nombre: nvarchar(510)
+    Ciudad_ID_Pais: bigint <<FK>>
 }
 entity "Provincia" as provincia {
     *Provincia_ID: bigint identity(1,1) <<PK>>
@@ -336,13 +343,12 @@ solicitud }|-left-|| cliente
 solicitud }|--o| agente
 solicitud_ciudad }|-left-|| solicitud
 solicitud_ciudad }|--|| ciudad
-
-propuesta |o--o| venta
+ 
 propuesta }o--|| solicitud
 propuesta }|--|| agente
-propuesta_hospedaje }|--|| propuesta
-propuesta_hospedaje }|-left-|| hospedaje
-propuesta_hospedaje }|--|| habitacion
+propuesta_habitacion }|--|| propuesta
+propuesta_habitacion }|-left-|| hospedaje
+propuesta_habitacion }|--|| habitacion
 propuesta_vuelo }|--|| propuesta
 propuesta_vuelo }|-up-|| vuelo
 
@@ -353,14 +359,16 @@ venta }|--|| medio_pago
 venta }|--|| canal_venta
 
 venta_excursion }|--|| reserva
-venta_hospedaje }|--|| reserva
+venta_habitacion }|--|| reserva
 venta_vuelo }|--|| reserva
 
+venta_propuesta }|--|| venta
+venta_propuesta }|--|| propuesta
 venta_excursion }|--|| venta
 venta_excursion }|--|| excursion
-venta_hospedaje }|-up-|| venta
-venta_hospedaje }|--|| hospedaje
-venta_hospedaje }|--|| habitacion
+venta_habitacion }|-up-|| venta
+venta_habitacion }|--|| hospedaje
+venta_habitacion }|--|| habitacion
 venta_vuelo }|--|| venta
 venta_vuelo }|--|| vuelo
 vuelo }|--|| aeropuerto
