@@ -88,7 +88,7 @@ entity "Excursion" as excursion {
     --
     Excursion_ID_Proveedor: bigint <<FK>>
     Excursion_Nombre: nvarchar(510)
-    Excursion_Descripcion: nvarchar(-1)
+    Excursion_Descripcion: nvarchar(max)
     Excursion_Horario: nvarchar(100)
     Excursion_Duracion: int
     Excursion_Precio: decimal(18,2)
@@ -104,7 +104,7 @@ entity "Solicitud" as solicitud {
     Solicitud_Fecha_Inicio_Tentativa: date
     Solicitud_Fecha_Fin_Tentativa: date
     Solicitud_Cantidad_Pasajeros: int
-    Solicitud_Observaciones: nvarchar(-1)
+    Solicitud_Observaciones: nvarchar(max)
     Solicitud_Presupuesto_Estimado: decimal(18,2)
 }
 entity "Solicitud_X_Ciudad" as solicitud_ciudad {
@@ -149,7 +149,6 @@ entity "Propuesta_X_Habitacion" as propuesta_habitacion {
     *Propuesta_X_Habitacion_ID: bigint identity(1,1) <<PK>>
     --
     Propuesta_X_Habitacion_ID_Propuesta: bigint <<FK>>
-    Propuesta_X_Habitacion_ID_Hospedaje: bigint <<FK>>
     Propuesta_X_Habitacion_ID_Habitacion: bigint <<FK>>
     Propuesta_X_Habitacion_Fecha_Desde: date
     Propuesta_X_Habitacion_Fecha_Hasta: date
@@ -173,7 +172,7 @@ entity "Habitacion" as habitacion {
     --
     Habitacion_ID_Hospedaje: bigint <<FK>>
     Habitacion_Nombre: nvarchar(510)
-    Habitacion_Descripcion: nvarchar(-1)
+    Habitacion_Descripcion: nvarchar(max)
     Habitacion_Precio_Noche: decimal(18,2)
 }
 'reserva
@@ -222,7 +221,6 @@ entity "Venta_X_Habitacion" as venta_habitacion {
     *Venta_X_Habitacion_ID: bigint identity(1,1)
     --
     Venta_X_Habitacion_ID_Venta: bigint <<FK>>
-    Venta_X_Habitacion_ID_Hospedaje: bigint <<FK>>
     Venta_X_Habitacion_ID_Habitacion: bigint <<FK>>
     Venta_X_Habitacion_ID_Reserva: bigint<<FK>>
     Venta_X_Habitacion_Hospedaje_Fecha_Desde: date
@@ -256,7 +254,7 @@ entity "Encuesta" as encuesta {
     Encuesta_ID_Agente: bigint <<FK>>
     Encuesta_Codigo_Encuesta: bigint
     Encuesta_Fecha_Encuesta: date
-    Encuesta_Comentarios: nvarchar(-1)
+    Encuesta_Comentarios: nvarchar(max)
 }
 entity "Encuesta_Venta" as encuesta_venta {
     *Encuesta_Venta_ID: bigint identity(1,1) <<PK>>
@@ -347,7 +345,6 @@ solicitud_ciudad }|--|| ciudad
 propuesta }o--|| solicitud
 propuesta }|--|| agente
 propuesta_habitacion }|--|| propuesta
-propuesta_habitacion }|-left-|| hospedaje
 propuesta_habitacion }|--|| habitacion
 propuesta_vuelo }|--|| propuesta
 propuesta_vuelo }|-up-|| vuelo
@@ -367,7 +364,6 @@ venta_propuesta }|--|| propuesta
 venta_excursion }|--|| venta
 venta_excursion }|--|| excursion
 venta_habitacion }|-up-|| venta
-venta_habitacion }|--|| hospedaje
 venta_habitacion }|--|| habitacion
 venta_vuelo }|--|| venta
 venta_vuelo }|--|| vuelo

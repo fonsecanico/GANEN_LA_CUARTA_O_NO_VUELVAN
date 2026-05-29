@@ -422,7 +422,7 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion (
 	Habitacion_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
 	Habitacion_Nombre nvarchar(510) not null,
 	Habitacion_Descripcion nvarchar(max) not null,
-	Habitacion_Precio decimal(18,2) not null,
+	Habitacion_Precio_Noche decimal(18,2) not null,
 	Habitacion_ID_Hospedaje BIGINT not null,
 	FOREIGN KEY (Habitacion_ID_Hospedaje) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje(Hospedaje_ID)
 );
@@ -972,7 +972,7 @@ GO
 CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones
  AS
 	BEGIN
-		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion(Habitacion_Nombre, Habitacion_Descripcion, Habitacion_Precio, Habitacion_ID_Hospedaje)
+		INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion(Habitacion_Nombre, Habitacion_Descripcion, Habitacion_Precio_Noche, Habitacion_ID_Hospedaje)
 		SELECT DISTINCT  t.Habitacion_Nombre, t.Habitacion_Descripcion, t.Habitacion_Precio_Noche, h.Hospedaje_ID
 		FROM  gd_esquema.Maestra t 
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Hospedaje h
@@ -1105,7 +1105,7 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion h 
 			ON h.Habitacion_Nombre = t.Habitacion_Nombre
 			AND h.Habitacion_Descripcion = t.Habitacion_Descripcion
-			AND h.Habitacion_Precio = t.Habitacion_Precio_Noche
+			AND h.Habitacion_Precio_Noche = t.Habitacion_Precio_Noche
 			AND h.Habitacion_ID_Hospedaje = ho.Hospedaje_ID
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
 			ON p.Propuesta_Nro_Propuesta = t.Propuesta_Nro_Propuesta
@@ -1165,7 +1165,7 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Habitacion h 
 			ON h.Habitacion_Nombre = t.Habitacion_Nombre
 			AND h.Habitacion_Descripcion = t.Habitacion_Descripcion
-			AND h.Habitacion_Precio = t.Habitacion_Precio_Noche
+			AND h.Habitacion_Precio_Noche = t.Habitacion_Precio_Noche
 			AND h.Habitacion_ID_Hospedaje = ho.Hospedaje_ID
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Venta vt
 			ON vt.Venta_Nro_Venta = t.Venta_Nro_Venta
