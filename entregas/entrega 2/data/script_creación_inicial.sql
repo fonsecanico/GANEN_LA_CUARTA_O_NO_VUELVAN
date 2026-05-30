@@ -624,7 +624,7 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Direcciones
 
 		UNION
 
-		SELECT DISTINCT --Dsp de hacer unas querys, se comprobo que no ninguna de las direcciones de Hospedaje es igual a las otras; xq lo que este union no va a meter elementos repetidos
+		SELECT DISTINCT --Dsp de hacer unas querys, se comprobo que ninguna de las direcciones de Hospedaje es igual a las otras; xq lo que este union no va a meter elementos repetidos
 			t.Hospedaje_Direccion AS Direccion,
 			CAST(NULL AS BIGINT) AS Direccion_ID_Localidad
 		FROM gd_esquema.Maestra t
@@ -672,7 +672,6 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ciudades
 		SELECT DISTINCT m.Hospedaje_Ciudad, p.Pais_ID --Todas las ciudades estan en Hospedaje_Ciudad
 		FROM gd_esquema.Maestra m
 		JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Pais p on p.Pais_Nombre = m.Hospedaje_Pais
-		WHERE Propuesta_Estado IS NOT NULL
 	END
 GO
 
