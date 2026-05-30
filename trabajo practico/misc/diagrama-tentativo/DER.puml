@@ -208,7 +208,7 @@ entity "Medio_Pago" as medio_pago {
     Medio_Pago_Nombre: nvarchar(510)
 }
 entity "Venta_X_Vuelo" as venta_vuelo {
-    *Venta_X_Vuelo_ID: bigint identity(1,1)
+    *Venta_X_Vuelo_ID: bigint identity(1,1) <<PK>>
     --
     Venta_X_Vuelo_ID_Venta: bigint <<FK>>
     Venta_X_Vuelo_ID_Vuelo: bigint <<FK>>
@@ -218,15 +218,15 @@ entity "Venta_X_Vuelo" as venta_vuelo {
     Venta_X_Vuelo_Subtotal: decimal(18,2)
 }
 entity "Venta_X_Habitacion" as venta_habitacion {
-    *Venta_X_Habitacion_ID: bigint identity(1,1)
+    *Venta_X_Habitacion_ID: bigint identity(1,1) <<PK>>
     --
     Venta_X_Habitacion_ID_Venta: bigint <<FK>>
     Venta_X_Habitacion_ID_Habitacion: bigint <<FK>>
     Venta_X_Habitacion_ID_Reserva: bigint<<FK>>
-    Venta_X_Habitacion_Hospedaje_Fecha_Desde: date
-    Venta_X_Habitacion_Hospedaje_Fecha_Hasta: date
-    Venta_X_Habitacion_Hospedaje_Cantidad: int
-    Venta_X_Habitacion_Hospedaje_Precio_Unitario: decimal(18,2)
+    Venta_X_Habitacion_Fecha_Desde: date
+    Venta_X_Habitacion_Fecha_Hasta: date
+    Venta_X_Habitacion_Cantidad_Habitaciones: int
+    Venta_X_Habitacion_Precio_Unitario: decimal(18,2)
     Venta_X_Habitacion_Subtotal: decimal(18,2)
 }
 entity "Venta_X_Excursion" as venta_excursion {
