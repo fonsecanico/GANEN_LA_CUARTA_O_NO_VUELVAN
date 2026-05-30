@@ -1266,47 +1266,154 @@ CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto
 GO
 
 --Ejecucion de Stored Procedures---------------------------
+DECLARE @Operacion VARCHAR(100) = 'INICIO';
 
- BEGIN TRANSACTION
- BEGIN TRY
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Provincias
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Localidades
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Direcciones
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Estados
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Paises
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ciudades
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Alianzas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aerolineas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aeropuertos
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Proveedores
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Excursiones
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agencias
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agentes
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Clientes
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes_X_Ciudad
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Reservas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Vuelos 
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Hospedajes
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Propuesta
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Vuelo
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Excursion
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aspectos
-	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto
+BEGIN TRANSACTION
+BEGIN TRY
+    SET @Operacion = 'migrar_Provincias';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Provincias;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Localidades';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Localidades;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Direcciones';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Direcciones;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Estados';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Estados;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Paises';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Paises;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ciudades';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ciudades;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Alianzas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Alianzas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Aerolineas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aerolineas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Aeropuertos';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aeropuertos;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Proveedores';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Proveedores;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Excursiones';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Excursiones;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Agencias';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agencias;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Agentes';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Agentes;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Clientes';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Clientes;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Solicitudes';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Solicitudes_X_Ciudad';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Solicitudes_X_Ciudad;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Propuestas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Reservas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Reservas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Vuelos';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Vuelos;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Hospedajes';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Hospedajes;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Habitaciones';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Habitaciones;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Medios_Pago';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Medios_Pago;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Canales_Venta';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Canales_Venta;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ventas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ventas_X_Propuesta';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Propuesta;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Propuestas_X_Vuelo';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Vuelo;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Propuestas_X_Habitacion';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Propuestas_X_Habitacion;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ventas_X_Vuelo';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Vuelo;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ventas_X_Habitacion';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Habitacion;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Ventas_X_Excursion';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Ventas_X_Excursion;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Encuestas';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Aspectos';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Aspectos;
+    PRINT @Operacion + ' corrio bien.';
+
+    SET @Operacion = 'migrar_Encuestas_X_Aspecto';
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.migrar_Encuestas_X_Aspecto;
+    PRINT @Operacion + ' corrio bien.';
+
 END TRY
 BEGIN CATCH
     ROLLBACK TRANSACTION;
-	THROW 52001, 'Error al migrar las tablas.',1;
+    
+    PRINT '========================================';
+    PRINT 'ERROR AL MIGRAR: ' + @Operacion;
+    PRINT 'MOTIVO: ' + ERROR_MESSAGE();
+    PRINT '========================================';
+    
+    THROW 52001, 'Error al migrar las tablas. Revisa los logs arriba.', 1;
 END CATCH
+
 IF (EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Provincia)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Localidad)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Direccion)
@@ -1339,16 +1446,14 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Habitacion)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Excursion)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto)
-AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto)
-)
-   BEGIN
-	PRINT 'Tablas migradas correctamente.';
-	COMMIT TRANSACTION;
-   END
-	 ELSE
-   BEGIN
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto))
+BEGIN
+    PRINT 'Tablas migradas correctamente.';
+    COMMIT TRANSACTION;
+END
+ELSE
+BEGIN
     ROLLBACK TRANSACTION;
-	THROW 52002, 'Hubo un error al migrar las tablas.',1;
-   END
+    THROW 52002, 'Hubo un error al migrar las tablas.',1;
+END
 GO
-
