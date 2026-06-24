@@ -1,4 +1,4 @@
-USE GD1C2025
+USE GD1C2026
 GO
 
 --DROP Preventivo de Funciones------------------------------------------------------------
@@ -41,6 +41,21 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_agentes;
 
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_agentes')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_agentes;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_ventas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_solicitudes')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_propuestas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_propuestas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_solicitudes_x_propuestas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes_x_propuestas;
+
+IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_encuestas')
+DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_encuestas;
 
 GO
 
@@ -93,7 +108,36 @@ GO
 
 --DROP Preventivo de Vistas------------------------------------------------------------
 
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_ticket_promedio')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ticket_promedio;
 
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_distribucion_facturacion')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_distribucion_facturacion;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_ranking_solicitudes_temporada')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ranking_solicitudes_temporada;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_anticipacion_promedio_solicitudes')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_anticipacion_promedio_solicitudes;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_tasa_aceptacion_propuestas')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_tasa_aceptacion_propuestas;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_cotizacion_promedio_temporada')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_cotizacion_promedio_temporada;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_tiempo_promedio_respuesta')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_tiempo_promedio_respuesta;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_desvio_presupuesto')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_desvio_presupuesto;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_ranking_aspectos')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ranking_aspectos;
+
+IF EXISTS (SELECT name FROM sys.views WHERE name = 'BI_vw_satisfaccion_promedio_agente')
+DROP VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_satisfaccion_promedio_agente;
+GO
 
 
 --Creación Funciones------------------------------------------------------------
@@ -291,7 +335,7 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas(
     FOREIGN KEY(Agente_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente(Agente_ID),
     Cantidad_Respuestas bigint,
     Puntuacion_Promedio decimal(18,2),
-    PRIMARY KEY(Tiempo_ID, Aspecto_Encuesta_ID, Cantidad_Respuestas)
+    PRIMARY KEY(Tiempo_ID, Aspecto_Encuesta_ID, Agente_ID)
 );
 
 
@@ -299,6 +343,188 @@ GO
 
 --Creacion de Vistas------------------------------------------------------------
 
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ticket_promedio
+AS
+SELECT
+    t.Año,
+    t.Mes,
+    re.Rango_Etario AS Rango_Etario_Cliente,
+    cv.Canal_Venta,
+    CAST(SUM(fv.Importe_Total) / NULLIF(SUM(fv.Cantidad), 0) AS decimal(18,2)) AS Ticket_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_ventas fv
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fv.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes re
+    ON re.Rango_Etario_Cli_ID = fv.Rango_Etario_Cli_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_canal_venta cv
+    ON cv.Canal_Venta_ID = fv.Canal_Venta_ID
+GROUP BY
+    t.Año,
+    t.Mes,
+    re.Rango_Etario,
+    cv.Canal_Venta;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_distribucion_facturacion
+AS
+SELECT
+    t.Año,
+    t.Cuatrimestre,
+    ts.Tipo_Servicio,
+    CAST(SUM(fv.Cantidad) * 100.0 / NULLIF(SUM(SUM(fv.Cantidad)) OVER (PARTITION BY t.Año, t.Cuatrimestre), 0) AS decimal(18,2)) AS Porcentaje_Facturacion
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_ventas fv
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fv.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tipo_servicio ts
+    ON ts.Tipo_Servicio_ID = fv.Tipo_Servicio_ID
+GROUP BY
+    t.Año,
+    t.Cuatrimestre,
+    ts.Tipo_Servicio;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ranking_solicitudes_temporada
+AS
+SELECT
+    t.Año,
+    temp.Temporada,
+    re.Rango_Etario AS Rango_Etario_Cliente,
+    SUM(fs.Cantidad) AS Cantidad_Solicitudes
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes fs
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fs.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_temporada temp
+    ON temp.Temporada_ID = fs.Temporada_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes re
+    ON re.Rango_Etario_Cli_ID = fs.Rango_Etario_Cli_ID
+GROUP BY
+    t.Año,
+    temp.Temporada,
+    re.Rango_Etario;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_anticipacion_promedio_solicitudes
+AS
+SELECT
+    t.Año,
+    t.Cuatrimestre,
+    re.Rango_Etario AS Rango_Etario_Cliente,
+    CAST(
+        SUM(fs.Anticipacion_Promedio * fs.Cantidad) / NULLIF(SUM(fs.Cantidad), 0)
+        AS decimal(18,2)
+    ) AS Anticipacion_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes fs
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fs.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes re
+    ON re.Rango_Etario_Cli_ID = fs.Rango_Etario_Cli_ID
+GROUP BY
+    t.Año,
+    t.Cuatrimestre,
+    re.Rango_Etario;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_tasa_aceptacion_propuestas
+AS
+SELECT
+    t.Año,
+    t.Cuatrimestre,
+    CAST(
+        SUM(CASE WHEN ep.Estado_Propuesta = 'Aceptada' THEN fp.Cantidad ELSE 0 END) * 100.0
+        / NULLIF(SUM(fp.Cantidad), 0)
+        AS decimal(18,2)
+    ) AS Tasa_Aceptacion
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_propuestas fp
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fp.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_estado_propuesta ep
+    ON ep.Estado_Propuesta_ID = fp.Estado_Propuesta_ID
+GROUP BY
+    t.Año,
+    t.Cuatrimestre;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_cotizacion_promedio_temporada
+AS
+SELECT
+    t_inicio.Año,
+    temp.Temporada,
+    CAST(
+        SUM(fp.Importe_Promedio * fp.Cantidad) / NULLIF(SUM(fp.Cantidad), 0)
+        AS decimal(18,2)
+    ) AS Cotizacion_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_propuestas fp
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t_inicio
+    ON t_inicio.Tiempo_ID = fp.Tiempo_Inicio_Viaje_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_temporada temp
+    ON temp.Temporada_ID = fp.Temporada_ID
+GROUP BY
+    t_inicio.Año,
+    temp.Temporada;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_tiempo_promedio_respuesta
+AS
+SELECT
+    t.Año,
+    t.Mes,
+    rea.Rango_Etario AS Rango_Etario_Agente,
+    CAST(SUM(fsp.Tiempo_Promedio_Respuesta * fsp.Cantidad) / NULLIF(SUM(fsp.Cantidad), 0) AS decimal(18,2)) AS Tiempo_Promedio_Respuesta
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes_x_propuestas fsp
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fsp.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes rea
+    ON rea.Rango_Etario_Ag_ID = fsp.Rango_Etario_Ag_ID
+GROUP BY
+    t.Año,
+    t.Mes,
+    rea.Rango_Etario;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_desvio_presupuesto
+AS
+SELECT
+    CAST(SUM(fsp.Desvio_Presupuesto_Promedio * fsp.Cantidad) / NULLIF(SUM(fsp.Cantidad), 0) AS decimal(18,2)) AS Desvio_Presupuesto_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes_x_propuestas fsp;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_ranking_aspectos
+AS
+SELECT
+    t.Año,
+    t.Cuatrimestre,
+    ae.Aspecto_Encuesta,
+    CAST(SUM(fe.Puntuacion_Promedio * fe.Cantidad_Respuestas) / NULLIF(SUM(fe.Cantidad_Respuestas), 0) AS decimal(18,2)) AS Puntuacion_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas fe
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fe.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_aspecto_encuesta ae
+    ON ae.Aspecto_Encuesta_ID = fe.Aspecto_Encuesta_ID
+GROUP BY
+    t.Año,
+    t.Cuatrimestre,
+    ae.Aspecto_Encuesta;
+GO
+
+CREATE VIEW GANEN_LA_CUARTA_O_NO_VUELVAN.BI_vw_satisfaccion_promedio_agente
+AS
+SELECT
+    t.Año,
+    t.Mes,
+    re.Rango_Etario AS Rango_Etario_Agente,
+    CAST(SUM(fe.Puntuacion_Promedio * fe.Cantidad_Respuestas) / NULLIF(SUM(fe.Cantidad_Respuestas), 0) AS decimal(18,2)) AS Satisfaccion_Promedio
+FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas fe
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+    ON t.Tiempo_ID = fe.Tiempo_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente ag
+    ON ag.Agente_ID = fe.Agente_ID
+JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re
+    ON re.Rango_Etario_Ag_ID = ag.Rango_Etario_Ag_ID
+GROUP BY
+    t.Año,
+    t.Mes,
+    re.Rango_Etario;
+GO
 
 --Creacion de Stored Procedures para Migracion----------------------------------
 
@@ -411,7 +637,155 @@ BEGIN
 	join GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re on re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(a.Agente_Fecha_Nac) 
 END
 	GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas
+AS
+BEGIN
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_ventas(Tiempo_ID, Rango_Etario_Cli_ID, Canal_Venta_ID, Tipo_Servicio_ID, Cantidad, Importe_Total)
+    SELECT t.Tiempo_ID, re.Rango_Etario_Cli_ID, dcv.Canal_Venta_ID, dts.Tipo_Servicio_ID, COUNT(v.Venta_ID) AS Cantidad, SUM(ISNULL(v.Venta_Importe_Total, 0)) AS Importe_Total
+    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta v
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente c
+        ON c.Cliente_ID = v.Venta_ID_Cliente
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Canal_Venta cv
+        ON cv.Canal_Venta_ID = v.Venta_ID_Canal_Venta
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+        ON t.Año = YEAR(v.Venta_Fecha_Venta)
+        AND t.Mes = MONTH(v.Venta_Fecha_Venta)
+        AND t.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(v.Venta_Fecha_Venta)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes re
+        ON re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(c.Cliente_Fecha_Nac)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_canal_venta dcv
+        ON dcv.Canal_Venta = cv.Canal_Venta_Nombre
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tipo_servicio dts
+        ON dts.Tipo_Servicio =
+            CASE 
+                WHEN EXISTS (
+                    SELECT 1
+                    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Venta_X_Propuesta vxp
+                    WHERE vxp.Venta_X_Propuesta_ID_Venta = v.Venta_ID
+                )
+                THEN 'Propuesta a Medida'
+                ELSE 'Venta Directa'
+            END
+    WHERE v.Venta_Fecha_Venta IS NOT NULL
+    GROUP BY
+        t.Tiempo_ID,
+        re.Rango_Etario_Cli_ID,
+        dcv.Canal_Venta_ID,
+        dts.Tipo_Servicio_ID;
+END
+GO
 	
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes
+AS
+BEGIN
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes(Tiempo_ID, Rango_Etario_Cli_ID, Temporada_ID, Cantidad, Anticipacion_Promedio)
+    SELECT t.Tiempo_ID, re.Rango_Etario_Cli_ID, dt.Temporada_ID, COUNT_BIG(s.Solicitud_ID) AS Cantidad, AVG(CAST(DATEDIFF(DAY, s.Solicitud_Fecha_Solicitud, s.Solicitud_Fecha_Inicio_Tentativa) AS decimal(18,2))) AS Anticipacion_Promedio
+    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud s
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Cliente c
+        ON c.Cliente_ID = s.Solicitud_ID_Cliente
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+        ON t.Año = YEAR(s.Solicitud_Fecha_Solicitud)
+        AND t.Mes = MONTH(s.Solicitud_Fecha_Solicitud)
+        AND t.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(s.Solicitud_Fecha_Solicitud)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes re
+        ON re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(c.Cliente_Fecha_Nac)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_temporada dt
+        ON dt.Temporada = GANEN_LA_CUARTA_O_NO_VUELVAN.getTemporada(s.Solicitud_Fecha_Solicitud)
+    WHERE s.Solicitud_Fecha_Solicitud IS NOT NULL
+    GROUP BY
+        t.Tiempo_ID,
+        re.Rango_Etario_Cli_ID,
+        dt.Temporada_ID;
+END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_propuestas
+AS
+BEGIN
+
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_propuestas(Tiempo_ID, Tiempo_Inicio_Viaje_ID, Estado_Propuesta_ID, Temporada_ID, Cantidad, Importe_Promedio)
+    SELECT te.Tiempo_ID AS Tiempo_ID, ti.Tiempo_ID AS Tiempo_Inicio_Viaje_ID, dep.Estado_Propuesta_ID, dt.Temporada_ID, COUNT_BIG(p.Propuesta_ID) AS Cantidad, AVG(CAST(p.Propuesta_Importe_Total AS decimal(18,2))) AS Importe_Promedio
+    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Estado_Propuesta ep
+        ON ep.Estado_Propuesta_ID = p.Propuesta_ID_Estado
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_estado_propuesta dep
+        ON dep.Estado_Propuesta = ep.Estado_Propuesta_Tipo
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo te
+        ON te.Año = YEAR(p.Propuesta_Fecha_Emision)
+        AND te.Mes = MONTH(p.Propuesta_Fecha_Emision)
+        AND te.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(p.Propuesta_Fecha_Emision)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo ti
+        ON ti.Año = YEAR(p.Propuesta_Fecha_Desde)
+        AND ti.Mes = MONTH(p.Propuesta_Fecha_Desde)
+        AND ti.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(p.Propuesta_Fecha_Desde)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_temporada dt
+        ON dt.Temporada = GANEN_LA_CUARTA_O_NO_VUELVAN.getTemporada(p.Propuesta_Fecha_Desde)
+    WHERE 
+        p.Propuesta_Fecha_Emision IS NOT NULL
+        AND p.Propuesta_Fecha_Desde IS NOT NULL
+    GROUP BY
+        te.Tiempo_ID,
+        ti.Tiempo_ID,
+        dep.Estado_Propuesta_ID,
+        dt.Temporada_ID;
+END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes_x_propuestas
+AS
+BEGIN
+
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes_x_propuestas(Tiempo_ID, Rango_Etario_Ag_ID, Cantidad, Tiempo_Promedio_Respuesta,Desvio_Presupuesto_Promedio)
+    SELECT t.Tiempo_ID, re.Rango_Etario_Ag_ID, COUNT_BIG(p.Propuesta_ID) AS Cantidad, AVG(CAST(DATEDIFF(DAY, s.Solicitud_Fecha_Solicitud, p.Propuesta_Fecha_Emision) AS decimal(18,2))) AS Tiempo_Promedio_Respuesta, AVG(abs(CAST(p.Propuesta_Importe_Total - s.Solicitud_Presupuesto_Estimado AS decimal(18,2)))) AS Desvio_Presupuesto_Promedio
+    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Propuesta p
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Solicitud s
+        ON s.Solicitud_ID = p.Propuesta_ID_Solicitud
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agente a
+        ON a.Agente_ID = p.Propuesta_ID_Agente
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+        ON t.Año = YEAR(s.Solicitud_Fecha_Solicitud)
+        AND t.Mes = MONTH(s.Solicitud_Fecha_Solicitud)
+        AND t.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(s.Solicitud_Fecha_Solicitud)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re
+        ON re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(a.Agente_Fecha_Nac)
+    WHERE
+        s.Solicitud_Fecha_Solicitud IS NOT NULL
+        AND p.Propuesta_Fecha_Emision IS NOT NULL
+    GROUP BY
+        t.Tiempo_ID,
+        re.Rango_Etario_Ag_ID;
+END
+GO
+
+CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_encuestas
+AS
+BEGIN
+
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas(Tiempo_ID, Aspecto_Encuesta_ID, Agente_ID, Cantidad_Respuestas, Puntuacion_Promedio)
+    SELECT t.Tiempo_ID, dae.Aspecto_Encuesta_ID, da.Agente_ID, COUNT_BIG(exa.Encuesta_X_Aspecto_ID) AS Cantidad_Respuestas, AVG(CAST(exa.Encuesta_X_Aspecto_Puntaje AS decimal(18,2))) AS Puntuacion_Promedio
+    FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta e
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto exa
+        ON exa.Encuesta_X_Aspecto_ID_Encuesta = e.Encuesta_ID
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto a
+        ON a.Aspecto_ID = exa.Encuesta_X_Aspecto_ID_Aspecto
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agente ag
+        ON ag.Agente_ID = e.Encuesta_ID_Agente
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
+        ON t.Año = YEAR(e.Encuesta_Fecha_Encuesta)
+        AND t.Mes = MONTH(e.Encuesta_Fecha_Encuesta)
+        AND t.Cuatrimestre = GANEN_LA_CUARTA_O_NO_VUELVAN.getCuatrimestre(e.Encuesta_Fecha_Encuesta)
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_aspecto_encuesta dae
+        ON dae.Aspecto_Encuesta = a.Aspecto_Tipo
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente da
+        ON da.DNI = ag.Agente_DNI
+    WHERE e.Encuesta_Fecha_Encuesta IS NOT NULL
+    GROUP BY
+        t.Tiempo_ID,
+        dae.Aspecto_Encuesta_ID,
+        da.Agente_ID;
+END
+GO
 
 --Ejecucion de Stored Procedures---------------------------
 
@@ -426,6 +800,11 @@ END
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_clientes
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_agentes
 	EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_agentes
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_propuestas
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_solicitudes_x_propuestas
+    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_encuestas
 	
 END TRY
 BEGIN CATCH
@@ -441,7 +820,11 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente)
-
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_ventas)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_propuestas)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes_x_propuestas)
+AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas)
 )
    BEGIN
 	PRINT 'Tablas migradas correctamente.';
