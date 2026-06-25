@@ -1,0 +1,181 @@
+@startuml
+hide circle
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 80
+skinparam class {
+    BackgroundColor White
+    BorderColor Black
+    ArrowColor Black
+}
+
+' ==========================================
+' DEFINICIÓN DE ENTIDADES
+' ==========================================
+
+entity "Tiempo" as Tiempo <<Dimension>> {
+  * Tiempo_ID : int identity(1,1) <<PK>>
+  --
+  Año : int
+  Cuatrimestre : int
+  Mes : int
+}
+
+entity "Tipo_Servicio" as TipoServicio <<Dimension>> {
+  * Tipo_Servicio_ID : int identity(1,1) <<PK>>
+  --
+  Tipo_Servicio : nvarchar(30)
+}
+
+entity "Canal_Venta" as CanalVenta <<Dimension>> {
+  * Canal_Venta_ID : int identity(1,1) <<PK>>
+  --
+  Canal_Venta : nvarchar(30)
+}
+
+entity "Rango_Etario_Clientes" as RangoEtarioClientes <<Dimension>> {
+  * Rango_Etario_Cli_ID : int identity(1,1) <<PK>>
+  --
+  Rango_Etario : nvarchar(30)
+}
+
+entity "Temporada" as Temporada <<Dimension>> {
+  * Temporada_ID : int identity(1,1) <<PK>>
+  --
+  Temporada : nvarchar(30)
+}
+
+entity "Estado_Propuesta" as EstadoPropuesta <<Dimension>> {
+  * Estado_Propuesta_ID : int identity(1,1) <<PK>>
+  --
+  Estado_Propuesta : nvarchar(30)
+}
+
+entity "Aspecto_Encuesta" as AspectoEncuesta <<Dimension>> {
+  * Aspecto_Encuesta_ID : int identity(1,1) <<PK>>
+  --
+  Aspecto_Encuesta : nvarchar(30)
+}
+
+entity "Rango_Etario_Agentes" as RangoEtarioAgentes <<Dimension>> {
+  * Rango_Etario_Ag_ID : int identity(1,1) <<PK>>
+  --
+  Rango_Etario : nvarchar(30)
+}
+
+entity "Agente" as Agente <<Dimension>> {
+  * Agente_ID : int identity(1,1) <<PK>>
+  --
+  Rango_Etario_Ag_ID : int <<FK>>
+  Nombre : nvarchar(510)
+  Apellido : nvarchar(510)
+  DNI : nvarchar(510)
+}
+
+entity "Origen_Encuesta" as OrigenEncuesta <<Dimension>> {
+  * Origen_Encuesta_ID: int identity(1,1) <<PK>>
+  --
+  Origen_Encuesta : nvarchar(30)
+}
+
+
+' --- HECHOS ---
+
+entity "Ventas" as Ventas <<Facts>> {
+  * Tiempo_ID : int <<PK, FK>>
+  * Rango_Etario_Cli_ID : int <<PK, FK>>
+  * Canal_Venta_ID : int <<PK, FK>>
+  * Tipo_Servicio_ID : int <<PK, FK>>
+  --
+  Cantidad : int
+  Importe_Total : decimal(18,2)
+}
+
+entity "Solicitudes" as Solicitudes <<Facts>> {
+  * Tiempo_ID : int <<PK, FK>>
+  * Rango_Eterio_Cli_ID : int <<PK, FK>>
+  * Temporada_ID : int <<PK, FK>>
+  --
+  Cantidad : int
+  Anticipacion_Promedio : int
+}
+
+entity "Propuestas" as Propuestas <<Facts>> {
+  * Tiempo_ID : int <<PK, FK>>
+  * Tiempo_Inicio_Viaje_ID : int <<PK, FK>>
+  * Estado_Propuesta_ID : int <<PK, FK>>
+  * Temporada_ID : int <<PK, FK>>
+  --
+  Cantidad : int
+  Importe_Promedio : decimal(18,2)
+}
+
+entity "Solicitudes_X_Propuestas" as SolicitudesXPropuestas <<Facts>> {
+  * Tiempo_ID : int <<PK, FK>>
+  * Rango_Etario_Ag_ID : int <<PK, FK>>
+  --
+  Cantidad : int
+  Tiempo_Promedio_Respuesta : decimal(18,2)
+  Desvio_Presupuesto_Promedio : decimal(18,2)
+}
+
+entity "Encuestas" as Encuestas <<Facts>> {
+  * Tiempo_ID : int <<PK, FK>>
+  * Aspecto_Encuesta_ID : int <<PK, FK>>
+  * Rango_Etario_Ag_ID : int <<PK, FK>>
+  * Origen_Encuesta_ID : int <<PK, FK>>
+  --
+  Puntuacion_Promedio : decimal(18,2)
+  Cantidad_Respuestas: bigint
+}
+
+' ==========================================
+' RELACIONES DIRECCIONALES (JERARQUÍA ESTRICTA)
+' ==========================================
+
+' NIVEL 1 a NIVEL 2: Tiempo hacia abajo a los Hechos
+Tiempo ||-down-|{ Ventas
+Tiempo ||-down-|{ Solicitudes
+Tiempo ||-down-|{ Propuestas
+Tiempo ||-down-|{ Propuestas
+Tiempo ||-down-|{ SolicitudesXPropuestas
+Tiempo ||-right-|{ Encuestas
+
+' NIVEL 2 a NIVEL 3: Hechos hacia abajo a las demás Dimensiones
+' Nota: Usamos }-down-|| para indicar que el Hecho (N) apunta hacia abajo a la Dimensión (1)
+Ventas }|-down-|| TipoServicio
+Ventas }|-down-|| CanalVenta
+Ventas }|-down-|| RangoEtarioClientes
+
+Solicitudes }|-down-|| RangoEtarioClientes
+Solicitudes }|-down-|| Temporada
+
+Propuestas }|-down-|| EstadoPropuesta
+Propuestas }|-down-|| Temporada
+
+SolicitudesXPropuestas }|-down-|| RangoEtarioAgentes
+
+Encuestas }|-down-|| AspectoEncuesta
+Encuestas }|-down-|| Agente
+Encuestas }|-down-|| OrigenEncuesta
+
+' NIVEL 3 a NIVEL 4: Sub-dimensión
+RangoEtarioAgentes ||-down-|{ Agente
+
+' ==========================================
+' ALINEACIÓN HORIZONTAL (Para evitar cruces sucios)
+' ==========================================
+' Forzamos a los hechos a alinearse en una fila
+Ventas -[hidden]right-> Solicitudes
+Solicitudes -[hidden]right-> Propuestas
+Propuestas -[hidden]right-> SolicitudesXPropuestas
+SolicitudesXPropuestas -[hidden]right-> Encuestas
+
+' Forzamos a las dimensiones inferiores a alinearse en otra fila
+TipoServicio -[hidden]right-> CanalVenta
+CanalVenta -[hidden]right-> RangoEtarioClientes
+RangoEtarioClientes -[hidden]right-> Temporada
+Temporada -[hidden]right-> EstadoPropuesta
+EstadoPropuesta -[hidden]right-> AspectoEncuesta
+AspectoEncuesta -[hidden]right-> RangoEtarioAgentes
+@enduml
