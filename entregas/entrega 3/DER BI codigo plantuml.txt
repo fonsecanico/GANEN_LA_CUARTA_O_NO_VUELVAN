@@ -14,7 +14,7 @@ skinparam class {
 ' ==========================================
 
 entity "Tiempo" as Tiempo <<Dimension>> {
-  * Tiempo_ID : int identity(1,1) <<PK>>
+  * Tiempo_ID : bigint identity(1,1) <<PK>>
   --
   Año : int
   Cuatrimestre : int
@@ -22,58 +22,58 @@ entity "Tiempo" as Tiempo <<Dimension>> {
 }
 
 entity "Tipo_Servicio" as TipoServicio <<Dimension>> {
-  * Tipo_Servicio_ID : int identity(1,1) <<PK>>
+  * Tipo_Servicio_ID : bigint identity(1,1) <<PK>>
   --
   Tipo_Servicio : nvarchar(30)
 }
 
 entity "Canal_Venta" as CanalVenta <<Dimension>> {
-  * Canal_Venta_ID : int identity(1,1) <<PK>>
+  * Canal_Venta_ID : bigint identity(1,1) <<PK>>
   --
   Canal_Venta : nvarchar(30)
 }
 
 entity "Rango_Etario_Clientes" as RangoEtarioClientes <<Dimension>> {
-  * Rango_Etario_Cli_ID : int identity(1,1) <<PK>>
+  * Rango_Etario_Cli_ID : bigint identity(1,1) <<PK>>
   --
   Rango_Etario : nvarchar(30)
 }
 
 entity "Temporada" as Temporada <<Dimension>> {
-  * Temporada_ID : int identity(1,1) <<PK>>
+  * Temporada_ID : bigint identity(1,1) <<PK>>
   --
   Temporada : nvarchar(30)
 }
 
 entity "Estado_Propuesta" as EstadoPropuesta <<Dimension>> {
-  * Estado_Propuesta_ID : int identity(1,1) <<PK>>
+  * Estado_Propuesta_ID : bigint identity(1,1) <<PK>>
   --
   Estado_Propuesta : nvarchar(30)
 }
 
 entity "Aspecto_Encuesta" as AspectoEncuesta <<Dimension>> {
-  * Aspecto_Encuesta_ID : int identity(1,1) <<PK>>
+  * Aspecto_Encuesta_ID : bigint identity(1,1) <<PK>>
   --
   Aspecto_Encuesta : nvarchar(30)
 }
 
 entity "Rango_Etario_Agentes" as RangoEtarioAgentes <<Dimension>> {
-  * Rango_Etario_Ag_ID : int identity(1,1) <<PK>>
+  * Rango_Etario_Ag_ID : bigint identity(1,1) <<PK>>
   --
   Rango_Etario : nvarchar(30)
 }
 
 entity "Agente" as Agente <<Dimension>> {
-  * Agente_ID : int identity(1,1) <<PK>>
+  * Agente_ID : bigint identity(1,1) <<PK>>
   --
-  Rango_Etario_Ag_ID : int <<FK>>
+  Rango_Etario_Ag_ID : bigint <<FK>>
   Nombre : nvarchar(510)
   Apellido : nvarchar(510)
   DNI : nvarchar(510)
 }
 
 entity "Origen_Encuesta" as OrigenEncuesta <<Dimension>> {
-  * Origen_Encuesta_ID: int identity(1,1) <<PK>>
+  * Origen_Encuesta_ID: bigint identity(1,1) <<PK>>
   --
   Origen_Encuesta : nvarchar(30)
 }
@@ -82,48 +82,48 @@ entity "Origen_Encuesta" as OrigenEncuesta <<Dimension>> {
 ' --- HECHOS ---
 
 entity "Ventas" as Ventas <<Facts>> {
-  * Tiempo_ID : int <<PK, FK>>
-  * Rango_Etario_Cli_ID : int <<PK, FK>>
-  * Canal_Venta_ID : int <<PK, FK>>
-  * Tipo_Servicio_ID : int <<PK, FK>>
+  * Tiempo_ID : bigint <<PK, FK>>
+  * Rango_Etario_Cli_ID : bigint <<PK, FK>>
+  * Canal_Venta_ID : bigint <<PK, FK>>
+  * Tipo_Servicio_ID : bigint <<PK, FK>>
   --
-  Cantidad : int
+  Cantidad : bigint
   Importe_Total : decimal(18,2)
 }
 
 entity "Solicitudes" as Solicitudes <<Facts>> {
-  * Tiempo_ID : int <<PK, FK>>
-  * Rango_Eterio_Cli_ID : int <<PK, FK>>
-  * Temporada_ID : int <<PK, FK>>
+  * Tiempo_ID : bigint <<PK, FK>>
+  * Rango_Eterio_Cli_ID : bigint <<PK, FK>>
+  * Temporada_ID : bigint <<PK, FK>>
   --
-  Cantidad : int
-  Anticipacion_Promedio : int
+  Cantidad : bigint
+  Anticipacion_Promedio : decimal(18,2)
 }
 
 entity "Propuestas" as Propuestas <<Facts>> {
-  * Tiempo_ID : int <<PK, FK>>
-  * Tiempo_Inicio_Viaje_ID : int <<PK, FK>>
-  * Estado_Propuesta_ID : int <<PK, FK>>
-  * Temporada_ID : int <<PK, FK>>
+  * Tiempo_ID : bigint <<PK, FK>>
+  * Tiempo_Inicio_Viaje_ID : bigint <<PK, FK>>
+  * Estado_Propuesta_ID : bigint <<PK, FK>>
+  * Temporada_ID : bigint <<PK, FK>>
   --
-  Cantidad : int
+  Cantidad : bigint
   Importe_Promedio : decimal(18,2)
 }
 
 entity "Solicitudes_X_Propuestas" as SolicitudesXPropuestas <<Facts>> {
-  * Tiempo_ID : int <<PK, FK>>
-  * Rango_Etario_Ag_ID : int <<PK, FK>>
+  * Tiempo_ID : bigint <<PK, FK>>
+  * Rango_Etario_Ag_ID : bigint <<PK, FK>>
   --
-  Cantidad : int
+  Cantidad : bigint
   Tiempo_Promedio_Respuesta : decimal(18,2)
   Desvio_Presupuesto_Promedio : decimal(18,2)
 }
 
 entity "Encuestas" as Encuestas <<Facts>> {
-  * Tiempo_ID : int <<PK, FK>>
-  * Aspecto_Encuesta_ID : int <<PK, FK>>
-  * Rango_Etario_Ag_ID : int <<PK, FK>>
-  * Origen_Encuesta_ID : int <<PK, FK>>
+  * Tiempo_ID : bigint <<PK, FK>>
+  * Aspecto_Encuesta_ID : bigint <<PK, FK>>
+  * Agente_ID : bigint <<PK, FK>>
+  * Origen_Encuesta_ID : bigint <<PK, FK>>
   --
   Puntuacion_Promedio : decimal(18,2)
   Cantidad_Respuestas: bigint
