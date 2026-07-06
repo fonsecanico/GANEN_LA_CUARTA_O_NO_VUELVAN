@@ -63,15 +63,6 @@ entity "Rango_Etario_Agentes" as RangoEtarioAgentes <<Dimension>> {
   Rango_Etario : nvarchar(30)
 }
 
-entity "Agente" as Agente <<Dimension>> {
-  * Agente_ID : bigint identity(1,1) <<PK>>
-  --
-  Rango_Etario_Ag_ID : bigint <<FK>>
-  Nombre : nvarchar(510)
-  Apellido : nvarchar(510)
-  DNI : nvarchar(510)
-}
-
 entity "Origen_Encuesta" as OrigenEncuesta <<Dimension>> {
   * Origen_Encuesta_ID: bigint identity(1,1) <<PK>>
   --
@@ -122,7 +113,7 @@ entity "Solicitudes_X_Propuestas" as SolicitudesXPropuestas <<Facts>> {
 entity "Encuestas" as Encuestas <<Facts>> {
   * Tiempo_ID : bigint <<PK, FK>>
   * Aspecto_Encuesta_ID : bigint <<PK, FK>>
-  * Agente_ID : bigint <<PK, FK>>
+  * Rango_Etario_Ag_ID : bigint <<PK, FK>>
   * Origen_Encuesta_ID : bigint <<PK, FK>>
   --
   Puntuacion_Promedio : decimal(18,2)
@@ -156,11 +147,10 @@ Propuestas }|-down-|| Temporada
 SolicitudesXPropuestas }|-down-|| RangoEtarioAgentes
 
 Encuestas }|-down-|| AspectoEncuesta
-Encuestas }|-down-|| Agente
+Encuestas }|-down-|| RangoEtarioAgentes
 Encuestas }|-down-|| OrigenEncuesta
 
 ' NIVEL 3 a NIVEL 4: Sub-dimensión
-RangoEtarioAgentes ||-down-|{ Agente
 
 ' ==========================================
 ' ALINEACIÓN HORIZONTAL (Para evitar cruces sucios)
