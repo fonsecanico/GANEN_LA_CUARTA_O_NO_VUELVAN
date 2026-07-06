@@ -42,8 +42,6 @@ DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_clientes;
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_rangos_etarios_agentes')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_agentes;
 
-IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_agentes')
-DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_agentes;
 
 IF EXISTS (SELECT name FROM sys.procedures WHERE name = 'BI_migrar_facts_ventas')
 DROP PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas;
@@ -85,8 +83,6 @@ DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_aspecto_encuesta;
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'BI_dim_origen_encuesta')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_origen_encuesta;
 
-IF EXISTS (SELECT name FROM sys.tables WHERE name = 'BI_dim_agente')
-DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente;
 
 IF EXISTS (SELECT name FROM sys.tables WHERE name = 'BI_dim_estado_propuesta')
 DROP TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_estado_propuesta;
@@ -274,14 +270,6 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_estado_propuesta(
     Estado_Propuesta nvarchar(30)
 );
 
-CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente(
-    Agente_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
-    Rango_Etario_Ag_ID BIGINT,
-    FOREIGN KEY (Rango_Etario_Ag_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes(Rango_Etario_Ag_ID),
-    Nombre nvarchar(510),
-    Apellido nvarchar(510),
-    DNI nvarchar(510)
-);
 
 CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_aspecto_encuesta(
     Aspecto_Encuesta_ID BIGINT IDENTITY(1,1) PRIMARY KEY,
@@ -351,11 +339,11 @@ CREATE TABLE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas(
     FOREIGN KEY(Aspecto_Encuesta_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_aspecto_encuesta(Aspecto_Encuesta_ID),
     Origen_Encuesta_ID BIGINT,
     FOREIGN KEY(Origen_Encuesta_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_origen_encuesta(Origen_Encuesta_ID),
-    Agente_ID BIGINT,
-    FOREIGN KEY(Agente_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente(Agente_ID),
+    Rango_Etario_Ag_ID BIGINT,
+    FOREIGN KEY(Rango_Etario_Ag_ID) REFERENCES GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes(Rango_Etario_Ag_ID),
     Cantidad_Respuestas bigint,
     Puntuacion_Promedio decimal(18,2),
-    PRIMARY KEY(Tiempo_ID, Origen_Encuesta_ID, Aspecto_Encuesta_ID, Agente_ID)
+    PRIMARY KEY(Tiempo_ID, Origen_Encuesta_ID, Aspecto_Encuesta_ID, Rango_Etario_Ag_ID)
 );
 
 
@@ -558,10 +546,8 @@ SELECT
 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas fe
 JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
     ON t.Tiempo_ID = fe.Tiempo_ID
-JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente ag
-    ON ag.Agente_ID = fe.Agente_ID
 JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re
-    ON re.Rango_Etario_Ag_ID = ag.Rango_Etario_Ag_ID
+    ON re.Rango_Etario_Ag_ID = fe.Rango_Etario_Ag_ID
 GROUP BY
     t.Año,
     t.Mes,
@@ -582,10 +568,8 @@ JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_origen_encuesta oe
     ON oe.Origen_Encuesta_ID = fe.Origen_Encuesta_ID
 JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
     ON t.Tiempo_ID = fe.Tiempo_ID
-JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente ag
-    ON ag.Agente_ID = fe.Agente_ID
 JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re
-    ON re.Rango_Etario_Ag_ID = ag.Rango_Etario_Ag_ID
+    ON re.Rango_Etario_Ag_ID = fe.Rango_Etario_Ag_ID
 GROUP BY
     t.Año,
     t.Mes,
@@ -706,15 +690,6 @@ BEGIN
 END
 	GO
 
-CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_agentes
-AS
-BEGIN
-	INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente(Nombre, Apellido, DNI, Rango_Etario_Ag_ID)
-	SELECT a.Agente_Nombre, a.Agente_Apellido, a.Agente_DNI, re.Rango_Etario_Ag_ID
-	FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Agente a
-	join GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re on re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(a.Agente_Fecha_Nac) 
-END
-	GO
 
 CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas
 AS
@@ -839,22 +814,26 @@ GO
 CREATE PROCEDURE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_encuestas
 AS
 BEGIN
-    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas(Tiempo_ID, Aspecto_Encuesta_ID, Origen_Encuesta_ID, Agente_ID, Cantidad_Respuestas, Puntuacion_Promedio)
+    INSERT INTO GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_encuestas(Tiempo_ID, Aspecto_Encuesta_ID, Origen_Encuesta_ID, Rango_Etario_Ag_ID, Cantidad_Respuestas, Puntuacion_Promedio)
     SELECT t.Tiempo_ID, 
            dae.Aspecto_Encuesta_ID, 
            doe.Origen_Encuesta_ID,
-           da.Agente_ID, COUNT_BIG(exa.Encuesta_X_Aspecto_ID) AS Cantidad_Respuestas, AVG(CAST(exa.Encuesta_X_Aspecto_Puntaje AS decimal(18,2))) AS Puntuacion_Promedio
+           re.Rango_Etario_Ag_ID, 
+           COUNT_BIG(exa.Encuesta_X_Aspecto_ID) AS Cantidad_Respuestas, 
+           AVG(CAST(exa.Encuesta_X_Aspecto_Puntaje AS decimal(18,2))) AS Puntuacion_Promedio
     FROM GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta e
     JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_X_Aspecto exa
         ON exa.Encuesta_X_Aspecto_ID_Encuesta = e.Encuesta_ID
     JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Aspecto a
         ON a.Aspecto_ID = exa.Encuesta_X_Aspecto_ID_Aspecto
-    LEFT JOIN Encuesta_Venta ev
+    LEFT JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Venta ev
         ON ev.Encuesta_Venta_ID_Encuesta = e.Encuesta_ID
-    LEFT JOIN Encuesta_Propuesta ep
+    LEFT JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Encuesta_Propuesta ep
         ON ep.Encuesta_Propuesta_ID_Encuesta = e.Encuesta_ID
     JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.Agente ag
         ON ag.Agente_ID = e.Encuesta_ID_Agente
+    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes re
+        ON re.Rango_Etario = GANEN_LA_CUARTA_O_NO_VUELVAN.getRangoEdad(ag.Agente_Fecha_Nac)
     JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo t
         ON t.Año = YEAR(e.Encuesta_Fecha_Encuesta)
         AND t.Mes = MONTH(e.Encuesta_Fecha_Encuesta)
@@ -868,14 +847,12 @@ BEGIN
             WHEN ep.Encuesta_Propuesta_ID_Encuesta IS NOT NULL THEN 'Propuesta'
             ELSE 'Sin Clasificar'
             END
-    JOIN GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente da
-        ON da.DNI = ag.Agente_DNI
     WHERE e.Encuesta_Fecha_Encuesta IS NOT NULL
     GROUP BY
         t.Tiempo_ID,
         dae.Aspecto_Encuesta_ID,
         doe.Origen_Encuesta_ID,
-        da.Agente_ID;
+        re.Rango_Etario_Ag_ID;
 END
 GO
 
@@ -920,10 +897,6 @@ BEGIN TRY
     EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_rangos_etarios_agentes;
     PRINT @Operacion + ' corrio bien.';
 
-    SET @Operacion = 'BI_migrar_agentes';
-    EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_agentes;
-    PRINT @Operacion + ' corrio bien.';
-
     SET @Operacion = 'BI_migrar_facts_ventas';
     EXECUTE GANEN_LA_CUARTA_O_NO_VUELVAN.BI_migrar_facts_ventas;
     PRINT @Operacion + ' corrio bien.';
@@ -963,7 +936,6 @@ AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_temporada)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_tiempo)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_agentes)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_rango_etario_clientes)
-AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_dim_agente)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_ventas)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_solicitudes)
 AND EXISTS (SELECT 1 FROM GANEN_LA_CUARTA_O_NO_VUELVAN.BI_facts_propuestas)
